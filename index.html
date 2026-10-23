@@ -1586,10 +1586,11 @@
       return CLOUD_BLOB_ID || safeGetStorage("maahad_blob_id_v1", "") || "";
     }
     function setBlobId(id) {
-      if (!id || !/^[A-Za-z0-9-]+$/.test(id)) return;
+      if (!id || !/^[A-Za-z0-9:-]+$/.test(id)) return;
       CLOUD_BLOB_ID = id;
       safeSetStorage("maahad_blob_id_v1", id);
     }
+    let lastCloudError = "";
 
     // ---- ntfy: only small messages, rate-limit aware (retry + back-off on 429) ----
     async function ntfyPost(obj, tries = 4) {
@@ -1605,31 +1606,84 @@
       return false;
     }
 
-    // ---- permanent cloud storage (never auto-deleted after 12 hours like ntfy) ----
-    async function blobRead(id) {
-      const r = await fetch(`${CLOUD_BLOB_API}/${id}`, { headers: { Accept: "application/json" }, cache: "no-store" });
-      if (!r.ok) throw new Error("blob read " + r.status);
+    // ---- permanent cloud storage: several free backends, tried in order ----
+    const CLOUD_BACKENDS = [
+      "https://jsonblob.com/api/jsonBlob",
+      "https://superjsonblob.com/api/jsonBlob"
+    ];
+    async function fetchT(url, opts, ms = 15000) {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), ms);
+      try {
+        return await fetch(url, Object.assign({}, opts, { signal: ctl.signal }));
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    function splitBlobId(full) {
+      const parts = String(full).split(":");
+      if (parts.length === 2 && CLOUD_BACKENDS[Number(parts[0])]) return { api: CLOUD_BACKENDS[Number(parts[0])], id: parts[1] };
+      return { api: CLOUD_BACKENDS[0], id: parts[parts.length - 1] };
+    }
+    async function blobRead(full) {
+      const { api, id } = splitBlobId(full);
+      const r = await fetchT(`${api}/${id}`, { headers: { Accept: "application/json" }, cache: "no-store" });
+      if (!r.ok) throw new Error("قراءة السحابة " + r.status);
       return await r.json();
     }
-    async function blobWrite(id, data) {
-      const r = await fetch(`${CLOUD_BLOB_API}/${id}`, {
+    async function blobWrite(full, data) {
+      const { api, id } = splitBlobId(full);
+      const r = await fetchT(`${api}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(data)
       });
-      if (!r.ok) throw new Error("blob write " + r.status);
+      if (!r.ok) throw new Error("كتابة السحابة " + r.status);
     }
     async function blobCreate(data) {
-      const r = await fetch(CLOUD_BLOB_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(data)
-      });
-      if (!r.ok) throw new Error("blob create " + r.status);
-      const loc = r.headers.get("Location") || r.headers.get("location") || "";
-      const id = loc.split("/").pop();
-      if (!id) throw new Error("blob id not exposed");
-      return id;
+      const errs = [];
+      for (let i = 0; i < CLOUD_BACKENDS.length; i++) {
+        try {
+          const r = await fetchT(CLOUD_BACKENDS[i], {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(data)
+          });
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          let id = (r.headers.get("Location") || "").split("/").pop();
+          if (!id) {
+            try { const j = await r.clone().json(); if (j && typeof j.id === "string") id = j.id; } catch (e) {}
+          }
+          if (!id) throw new Error("لم يصل رقم التخزين");
+          return `${i}:${id}`;
+        } catch (e) {
+          errs.push(`${i + 1}) ${e && e.name === "AbortError" ? "انتهت المهلة" : (e && e.message) || e}`);
+        }
+      }
+      throw new Error(errs.join(" | "));
+    }
+
+    // ---- gzip helpers (make the ntfy fallback much smaller) ----
+    async function gzipB64(str) {
+      if (typeof CompressionStream === "undefined") return { z: 0, b64: encodeUtf8Base64(str) };
+      const cs = new CompressionStream("gzip");
+      const w = cs.writable.getWriter();
+      w.write(new TextEncoder().encode(str));
+      w.close();
+      const buf = new Uint8Array(await new Response(cs.readable).arrayBuffer());
+      let bin = "";
+      for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+      return { z: 1, b64: btoa(bin) };
+    }
+    async function gunzipB64(b64) {
+      const bin = atob(b64);
+      const u = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+      const ds = new DecompressionStream("gzip");
+      const w = ds.writable.getWriter();
+      w.write(u);
+      w.close();
+      return await new Response(ds.readable).text();
     }
 
     function mergeScores(a, b) {
@@ -1677,6 +1731,7 @@
             await blobWrite(id, snapshot);
             ok = true;
           } catch (e) {
+            lastCloudError = (e && e.message) || String(e);
             id = "";
           }
         }
@@ -1687,6 +1742,7 @@
             setBlobId(id);
             ok = true;
           } catch (e) {
+            lastCloudError = (e && e.message) || String(e);
             ok = false;
           }
         }
@@ -1696,17 +1752,18 @@
           await ntfyPost({ t: "blob_ping", v: appState.syncVersion, id: id });
         } else {
           // Fallback: throttled chunks over ntfy (temporary, ~12h)
-          const b64 = encodeUtf8Base64(JSON.stringify(snapshot));
+          const packed = await gzipB64(JSON.stringify(snapshot));
+          const b64 = packed.b64;
           const chunkSize = 2600;
           const totalChunks = Math.ceil(b64.length / chunkSize) || 1;
-          if (totalChunks > 40) throw new Error("too large for fallback");
+          if (!silent) showToast(`☁️ التخزين الدائم غير متاح الآن، جاري الإرسال المؤقت (${totalChunks} جزء)...`, "info");
           for (let i = 0; i < totalChunks; i++) {
             const sent = await ntfyPost({
-              t: "state_chunk", v: appState.syncVersion, i: i, n: totalChunks,
+              t: "state_chunk", v: appState.syncVersion, i: i, n: totalChunks, z: packed.z,
               d: b64.slice(i * chunkSize, (i + 1) * chunkSize)
-            }, 5);
-            if (!sent) throw new Error("ntfy chunk failed");
-            await sleep(700);
+            }, 6);
+            if (!sent) throw new Error("فشل إرسال الجزء " + (i + 1) + " من " + totalChunks);
+            await sleep(900);
           }
         }
 
@@ -1714,11 +1771,11 @@
         if (!silent) {
           showToast(ok
             ? "☁️ تم الحفظ في السحابة الدائمة ومزامنة الامتحانات لكل الأجهزة!"
-            : "☁️ تم النشر مؤقتاً (12 ساعة) لتعذر التخزين الدائم الآن — أعد المحاولة لاحقاً.", ok ? "success" : "info");
+            : "☁️ تم النشر مؤقتاً (12 ساعة) فقط لأن التخزين الدائم تعذر: " + lastCloudError, ok ? "success" : "info");
         }
       } catch (err) {
         updateCloudSyncBadge("offline", "محفوظ على الجهاز");
-        if (!silent) showToast("تعذر النشر للسحابة الآن، تم الحفظ على هذا الجهاز. جرّب مرة أخرى.", "error");
+        if (!silent) showToast("تعذر النشر للسحابة (" + (lastCloudError || (err && err.message) || "خطأ شبكة") + "). تم الحفظ على هذا الجهاز، وحمّل نسخة الموقع index.html وارفعها لتصل الامتحانات للجميع.", "error");
       }
     }
 
@@ -1765,7 +1822,7 @@
                 if (outer.event !== "message" || !outer.message) continue;
                 const inner = JSON.parse(outer.message);
                 if (inner.t === "state_chunk" && inner.v && inner.n) {
-                  if (!versionChunks[inner.v]) versionChunks[inner.v] = { n: inner.n, parts: {} };
+                  if (!versionChunks[inner.v]) versionChunks[inner.v] = { n: inner.n, parts: {}, z: inner.z ? 1 : 0 };
                   versionChunks[inner.v].parts[inner.i] = inner.d;
                 } else if (inner.t === "score_entry" && inner.entry) {
                   remoteScores.push(inner.entry);
@@ -1808,7 +1865,7 @@
             const grp = versionChunks[latestV];
             let fullB64 = "";
             for (let i = 0; i < grp.n; i++) fullB64 += grp.parts[i];
-            try { remoteState = JSON.parse(decodeUtf8Base64(fullB64)); } catch (e) { remoteState = null; }
+            try { remoteState = JSON.parse(grp.z ? await gunzipB64(fullB64) : decodeUtf8Base64(fullB64)); } catch (e) { remoteState = null; }
           }
         }
 
@@ -2196,7 +2253,7 @@
       }
       // Cloud blob id from a shared link (#cb=ID) or a previous visit
       try {
-        const m = (window.location.hash || "").match(/[#&]cb=([A-Za-z0-9-]+)/);
+        const m = (window.location.hash || "").match(/[#&]cb=([A-Za-z0-9:-]+)/);
         if (m) setBlobId(m[1]);
       } catch (e) {}
       // Load custom subjects

@@ -4,33 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>منصة المعهد الذكية | الاختبارات التفاعلية والمعلم الذكي Gemini</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Cairo', 'Tajawal', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              400: '#818cf8',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-              900: '#1e1b4b',
+    window.tailwind = {
+      config: {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Cairo', 'Tajawal', 'sans-serif'],
+            },
+            colors: {
+              brand: {
+                50: '#eef2ff',
+                100: '#e0e7ff',
+                400: '#818cf8',
+                500: '#6366f1',
+                600: '#4f46e5',
+                700: '#4338ca',
+                900: '#1e1b4b',
+              }
             }
           }
         }
       }
     };
   </script>
+  <script src="https://cdn.tailwindcss.com/3.4.17" async></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <style>
     :root, [data-theme="dark"] {
       --bg-body: #090d16;
@@ -930,42 +930,44 @@
     <!-- ==================== VIEW 4: ADMIN DASHBOARD (لوحة المشرف) ==================== -->
     <div id="viewAdmin" class="hidden">
 
-      <!-- Admin Lock Screen (Supports Native Password Managers & Instant Saved Credentials) -->
-      <div id="adminLockSection" class="max-w-md mx-auto glass-card rounded-2xl p-6 border border-amber-500/30 text-center my-6">
+      <!-- Admin Lock Screen (True Firebase Email/Password Authentication - Zero Hardcoded PINs) -->
+      <div id="adminLockSection" class="max-w-lg mx-auto glass-card rounded-2xl p-6 border border-amber-500/30 text-center my-6">
         <div class="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-3xl mx-auto mb-3">
           🔐
         </div>
-        <h2 class="text-lg sm:text-xl font-black text-white mb-1">تسجيل دخول المشرف</h2>
+        <h2 class="text-lg sm:text-xl font-black text-white mb-1">تسجيل دخول المشرف المحمي (Firebase Auth)</h2>
         <p class="text-xs text-slate-400 mb-3">
-          تُحفظ بياناتك تلقائياً مثل التطبيقات المعتمدة؛ حتى بعد قفل اللوحة لن تحتاج لإعادة كتابة البريد أو كلمة السر!
+          التحقق يتم مباشرة عبر خادم قاعدة البيانات (Email &amp; Password) — لا توجد أي أرقام سرية مخزنة داخل ملف الموقع.
         </p>
 
         <div id="savedCredsNoticeBadge" class="hidden mb-3 p-2.5 rounded-xl bg-emerald-950/70 border border-emerald-500/40 text-xs font-bold text-emerald-300">
-          ✅ تم استرجاع بريدك وكلمة السر المحفوظة تلقائياً — اضغط «دخول لوحة المشرف» مباشرة!
+          ✅ جلسة المشرف موثقة عبر قاعدة البيانات السحابية
         </div>
 
         <form id="adminLoginForm" onsubmit="event.preventDefault(); unlockAdminPanel();" autocomplete="on" class="space-y-3 text-right mb-4">
           <div>
-            <label for="adminEmailInput" class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني للمشرف:</label>
+            <label for="adminEmailInput" class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني للمشرف (المسجل في Firebase Auth):</label>
             <input
               id="adminEmailInput"
               name="username"
               type="email"
               autocomplete="username"
-              placeholder="البريد الإلكتروني للمشرف"
+              value=""
+              placeholder="admin@example.com"
               dir="ltr"
               class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-left text-white focus:outline-none focus:border-amber-500"
             />
           </div>
           <div>
-            <label for="adminPinInput" class="block text-xs font-bold text-slate-300 mb-1">كلمة السر / الرقم السري للمشرف:</label>
+            <label for="adminPinInput" class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور (حساب المشرف في قاعدة البيانات):</label>
             <div class="relative flex items-center">
               <input
                 id="adminPinInput"
                 name="password"
                 type="password"
                 autocomplete="current-password"
-                placeholder="أدخل كلمة السر الخاصة بالمشرف..."
+                value=""
+                placeholder="أدخل كلمة المرور الخاصة بحساب المشرف..."
                 dir="ltr"
                 class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-center text-white focus:outline-none focus:border-amber-500"
               />
@@ -983,15 +985,16 @@
           <div class="space-y-2 pt-1">
             <label class="flex items-center gap-2 text-xs text-slate-200 cursor-pointer">
               <input id="adminSaveCredsCheckbox" type="checkbox" checked class="rounded border-slate-600 text-emerald-500 focus:ring-emerald-500" />
-              <span>💾 حفظ البريد وكلمة السر للتعبئة التلقائية (حتى بعد قفل اللوحة)</span>
+              <span>💾 السماح لمدير كلمات المرور في المتصفح بحفظ بيانات الدخول</span>
             </label>
             <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
               <input id="adminRememberCheckbox" type="checkbox" checked class="rounded border-slate-600 text-amber-500 focus:ring-amber-500" />
-              <span>🔓 إبقاء لوحة المشرف مفتوحة دائماً على جهازي</span>
+              <span>🔓 إبقاء جلسة التوثيق (Refresh Token) نشطة على جهازي الشخصي</span>
             </label>
           </div>
 
           <button
+            id="adminLoginSubmitBtn"
             type="submit"
             class="w-full py-3 mt-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition shadow-lg shadow-amber-500/20"
           >
@@ -999,13 +1002,100 @@
           </button>
         </form>
 
-        <button
-          type="button"
-          onclick="clearSavedAdminCredentials()"
-          class="text-[11px] text-slate-400 hover:text-rose-400 underline transition"
-        >
-          🗑️ مسح البريد وكلمة السر المحفوظة من هذا الجهاز
-        </button>
+        <!-- Direct Download Button on Lock Screen so User Can Always Download index.html -->
+        <div class="mb-4 p-3 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-right">
+          <div class="text-xs font-bold text-indigo-200 mb-2">
+            📥 هل تريد تنزيل ملف الموقع (index.html) على جهازك لرفعه على GitHub؟
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <button
+              type="button"
+              id="lockScreenDownloadSiteBtn"
+              onclick="downloadUpdatedSiteHtml()"
+              class="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2"
+            >
+              <span>📥 تحميل ملف الموقع (index.html)</span>
+            </button>
+            <button
+              type="button"
+              onclick="copyFullSiteHtmlToClipboard()"
+              class="py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm shadow-lg transition flex items-center justify-center gap-1.5"
+            >
+              <span>📋 نسخ كود الموقع بالكامل</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Collapsible Firebase Setup Wizard (Open by default when not configured) -->
+        <div class="pt-3 border-t border-slate-800 text-right">
+          <div class="flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onclick="toggleFirebaseSetupBox()"
+              class="text-xs font-bold text-indigo-300 hover:text-indigo-200 flex items-center gap-1"
+            >
+              <span>⚙️ خطوة الربط السحابي (Firebase Realtime DB) — اضغط للفتح/الإغلاق</span>
+            </button>
+            <button
+              type="button"
+              onclick="clearSavedAdminCredentials()"
+              class="text-[11px] text-slate-400 hover:text-rose-400 underline transition"
+            >
+              🗑️ مسح الجلسة من هذا الجهاز
+            </button>
+          </div>
+
+          <div id="firebaseSetupCollapseBox" class="hidden mt-3 p-3.5 rounded-xl bg-slate-950/90 border border-indigo-500/30 space-y-2.5">
+            <div class="text-[11px] text-slate-300 leading-relaxed">
+              الصق كود <code class="text-amber-300">firebaseConfig</code> من مشروعك في Firebase (أو أدخل الرابط ومفتاح API)، ثم سجل دخولك واضغط «تحميل نسخة الموقع» لتثبيت الإعدادات في الملف النهائي:
+            </div>
+            <textarea
+              id="fbRawConfigPasteInput"
+              rows="3"
+              oninput="parsePastedFirebaseSnippet(this.value)"
+              placeholder='الصق كود firebaseConfig هنا لاستخراج الرابط والمفتاح تلقائياً...'
+              dir="ltr"
+              class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs font-mono text-emerald-300"
+            ></textarea>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-300 mb-1">رابط قاعدة البيانات (Database URL):</label>
+              <input
+                id="fbDatabaseUrlInput"
+                type="url"
+                dir="ltr"
+                value="https://maahad-app-default-rtdb.europe-west1.firebasedatabase.app" placeholder="https://maahad-app-default-rtdb.europe-west1.firebasedatabase.app"
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-left text-white"
+              />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-300 mb-1">مفتاح الواجهة (Web API Key):</label>
+              <input
+                id="fbApiKeyInput"
+                type="text"
+                dir="ltr"
+                value="AIzaSyA2tEV9pMdTMJ3sqQqS4uRfX7Q3RPv7EwI"
+                placeholder="AIzaSy..."
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-left text-white"
+              />
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button
+                type="button"
+                onclick="saveFirebaseConfigFromUI()"
+                class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition"
+              >
+                🔌 حفظ واختبار الاتصال بالقاعدة
+              </button>
+              <button
+                type="button"
+                onclick="copyFirebaseSecurityRules()"
+                class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs font-bold transition"
+              >
+                📋 نسخ قواعد الأمان (Rules)
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Unlocked Admin Content -->
@@ -1118,13 +1208,13 @@
             <div class="text-[11px] font-bold text-slate-400 mb-1.5">قائمة المشرفين المعتمدين حالياً (لا يدخل غيرهم):</div>
             <div id="adminEmailsManageList" class="space-y-1.5 max-h-28 overflow-y-auto mb-3"></div>
             <div class="pt-2.5 border-t border-slate-800">
-              <label class="block text-[11px] font-bold text-slate-300 mb-1">🔑 تغيير الرقم السري للمشرف (الحالي: 010945):</label>
+              <label class="block text-[11px] font-bold text-emerald-300 mb-1">🔐 تغيير كلمة المرور لحساب المشرف في Firebase Auth:</label>
               <div class="flex gap-2">
                 <input
                   id="newAdminSecretPinInput"
-                  type="text"
+                  type="password"
                   dir="ltr"
-                  placeholder="اكتب رقماً سرياً جديداً..."
+                  placeholder="كلمة مرور جديدة (6 أحرف أو أرقام على الأقل)..."
                   class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-left text-white focus:outline-none focus:border-amber-500"
                 />
                 <button
@@ -1460,6 +1550,32 @@
     </div>
   </div>
 
+  <!-- Exam Duration Edit Modal (Replaces blocked window.prompt) -->
+  <div id="durationEditModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="glass-card rounded-2xl p-5 max-w-sm w-full border border-amber-500/40 shadow-2xl">
+      <h3 class="text-lg font-black text-white mb-1">⏱️ تعديل مدة الامتحان</h3>
+      <p id="durationEditModalSubtitle" class="text-xs text-slate-400 mb-3">أدخل مدة الامتحان بالدقائق (أو اكتب 0 لوقت مفتوح بدون مؤقت):</p>
+      <input
+        id="durationEditModalInput"
+        type="number"
+        min="0"
+        max="999"
+        placeholder="مثال: 20 (أو 0 لوقت مفتوح)"
+        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white mb-3 focus:outline-none focus:border-amber-500"
+      />
+      <div class="flex flex-wrap gap-1.5 mb-3">
+        <button type="button" onclick="document.getElementById('durationEditModalInput').value='0'" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 text-xs font-bold">♾️ وقت مفتوح (0)</button>
+        <button type="button" onclick="document.getElementById('durationEditModalInput').value='15'" class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-xs">15 دقيقة</button>
+        <button type="button" onclick="document.getElementById('durationEditModalInput').value='30'" class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-xs">30 دقيقة</button>
+        <button type="button" onclick="document.getElementById('durationEditModalInput').value='60'" class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-xs">60 دقيقة</button>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="confirmExamDurationEdit()" class="flex-1 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-sm">حفظ ومزامنة الوقت ✓</button>
+        <button onclick="closeDurationEditModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-sm">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="border-t border-slate-800/80 bg-slate-950/80 py-4 px-4 mt-8 text-center text-xs text-slate-400">
     <div class="app-layout-container max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
@@ -1505,12 +1621,16 @@
     // ==================== INITIAL LEADERBOARD DATA ====================
     const INITIAL_LEADERBOARD = [];
 
-    // ==================== ADMIN SECURITY & CLOUD CONSTANTS ====================
-    const ADMIN_DEFAULT_PIN = "010945";
-    let CLOUD_BLOB_ID = "";
+    // ==================== FIREBASE CLOUD CONFIGURATION ====================
+    // Baked automatically into index.html when Admin clicks "تحميل نسخة الموقع"
+    const BUILTIN_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyA2tEV9pMdTMJ3sqQqS4uRfX7Q3RPv7EwI",
+      databaseURL: "https://maahad-app-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "maahad-app"
+    };
 
-    // ==================== APPLICATION STATE ====================
-    let appState = {
+    // ==================== APPLICATION STATE (NO HARDCODED PIN OR PASSWORD) ====================
+    var appState = window.appState = {
       studentName: "",
       currentTab: "exams",
       deviceMode: "desktop",
@@ -1521,26 +1641,122 @@
       exams: [],
       leaderboard: [],
       announcement: "أهلاً بكم في منصة المعهد الذكية للامتحانات! سجّل اسمك في الأعلى، اختر المادة الدراسية، وابدأ الحل ليتم تصحيح إجاباتك فوراً بالذكاء الاصطناعي.",
-      adminPin: "010945",
       adminEmail: "",
-      adminEmails: ["auman12356@gmail.com"],
+      adminEmails: [],
       adminUnlocked: false,
+      adminIdToken: "",
+      adminRefreshToken: "",
+      adminTokenExpiresAt: 0,
       allowRetake: false,
       completedExamIds: {},
       activeExamId: null,
+      editingDurationExamId: null,
       studentAnswers: {},
       studentReasons: {},
       examGraded: false,
       syncVersion: 0,
-      deletedExamIds: []
+      firebaseConfig: {
+        apiKey: BUILTIN_FIREBASE_CONFIG.apiKey || "",
+        databaseURL: BUILTIN_FIREBASE_CONFIG.databaseURL || "",
+        projectId: BUILTIN_FIREBASE_CONFIG.projectId || ""
+      }
     };
 
-    // ==================== MULTI-DEVICE CLOUD SYNC ENGINE ====================
-    // Automatically syncs exams, subjects, announcements, settings & leaderboard across ALL phones & laptops!
-    const CLOUD_SYNC_TOPIC = "maahad_smart_sync_auman12356_v3";
-    const CLOUD_SYNC_URL = `https://ntfy.sh/${CLOUD_SYNC_TOPIC}`;
-    let cloudEventSource = null;
+    // ==================== INDEXEDDB LARGE EXAM CACHE (SUPPORTS 100s OF MBs OF QUESTIONS) ====================
+    const IDB_NAME = "MaahadSmartExamsDB_v3";
+    const IDB_STORE = "exams_store";
+
+    function openExamsIndexedDB() {
+      return new Promise((resolve, reject) => {
+        if (typeof indexedDB === "undefined") {
+          resolve(null);
+          return;
+        }
+        try {
+          const req = indexedDB.open(IDB_NAME, 1);
+          req.onupgradeneeded = function (ev) {
+            const db = ev.target.result;
+            if (!db.objectStoreNames.contains(IDB_STORE)) {
+              db.createObjectStore(IDB_STORE, { keyPath: "id" });
+            }
+          };
+          req.onsuccess = function (ev) {
+            resolve(ev.target.result);
+          };
+          req.onerror = function () {
+            resolve(null);
+          };
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }
+
+    async function saveExamsToLocalCache(examsList) {
+      safeSetStorage("maahad_exams_v2", examsList);
+      const db = await openExamsIndexedDB();
+      if (!db) return;
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction(IDB_STORE, "readwrite");
+          const store = tx.objectStore(IDB_STORE);
+          store.clear();
+          examsList.forEach(ex => {
+            if (ex && ex.id) store.put(ex);
+          });
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        } catch (e) {
+          resolve(false);
+        }
+      });
+    }
+
+    async function loadExamsFromLocalCache() {
+      const db = await openExamsIndexedDB();
+      if (db) {
+        const idbExams = await new Promise((resolve) => {
+          try {
+            const tx = db.transaction(IDB_STORE, "readonly");
+            const store = tx.objectStore(IDB_STORE);
+            const req = store.getAll();
+            req.onsuccess = () => resolve(req.result || []);
+            req.onerror = () => resolve(null);
+          } catch (e) {
+            resolve(null);
+          }
+        });
+        if (Array.isArray(idbExams) && idbExams.length > 0) {
+          idbExams.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+          return idbExams;
+        }
+      }
+      const fallback = safeGetStorage("maahad_exams_v2", null);
+      if (Array.isArray(fallback) && fallback.length > 0) {
+        return fallback;
+      }
+      return JSON.parse(JSON.stringify(INITIAL_EXAMS));
+    }
+
+    // ==================== FIREBASE REALTIME DATABASE + AUTH ENGINE ====================
+    let firebaseMetaSSE = null;
+    let firebaseScoresSSE = null;
+    let firebasePollTimer = null;
     let isSyncingCloud = false;
+
+    function getCleanDatabaseUrl() {
+      let url = (appState.firebaseConfig?.databaseURL || "").trim();
+      if (!url && appState.firebaseConfig?.projectId) {
+        url = `https://${appState.firebaseConfig.projectId.trim()}-default-rtdb.firebaseio.com`;
+      }
+      return url.replace(/\/+$/, "");
+    }
+
+    function isFirebaseConfigured() {
+      const dbUrl = getCleanDatabaseUrl();
+      const apiKey = (appState.firebaseConfig?.apiKey || "").trim();
+      return Boolean(dbUrl && apiKey);
+    }
 
     function updateCloudSyncBadge(status, text) {
       const btn = document.getElementById("cloudSyncStatusBtn");
@@ -1555,241 +1771,342 @@
         return;
       }
 
+      if (!isFirebaseConfigured()) {
+        iconEl.textContent = "⚙️";
+        textEl.textContent = text || "بانتظار ربط القاعدة";
+        btn.className = "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30";
+        return;
+      }
+
       if (status === "syncing") {
         iconEl.textContent = "🔄";
         textEl.textContent = text || "جاري المزامنة...";
         btn.className = "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 animate-pulse";
-      } else if (status === "offline") {
-        iconEl.textContent = "📴";
-        textEl.textContent = text || "وضع بدون نت";
-        btn.className = "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30";
+      } else if (status === "error") {
+        iconEl.textContent = "⚠️";
+        textEl.textContent = text || "تحقق من إعدادات القاعدة";
+        btn.className = "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30";
       } else {
         iconEl.textContent = "☁️";
-        textEl.textContent = text || "متزامن لكل الأجهزة ✓";
+        textEl.textContent = text || "متصل بـ Firebase لحظياً ✓";
         btn.className = "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30 transition";
       }
     }
 
-    function encodeUtf8Base64(str) {
-      return btoa(unescape(encodeURIComponent(str)));
+    function toggleFirebaseSetupBox() {
+      const box = document.getElementById("firebaseSetupCollapseBox");
+      if (!box) return;
+      box.classList.toggle("hidden");
     }
 
-    function decodeUtf8Base64(b64) {
-      return decodeURIComponent(escape(atob(b64)));
-    }
+    function parsePastedFirebaseSnippet(rawText) {
+      if (!rawText) return;
+      const apiKeyMatch = rawText.match(/apiKey\s*:\s*["']([^"']+)["']/);
+      const dbUrlMatch = rawText.match(/databaseURL\s*:\s*["']([^"']+)["']/);
+      const projMatch = rawText.match(/projectId\s*:\s*["']([^"']+)["']/);
 
-    const CLOUD_BLOB_API = "https://jsonblob.com/api/jsonBlob";
-    const NTFY_URL = "https://ntfy.sh/" + CLOUD_SYNC_TOPIC;
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
+      const urlInput = document.getElementById("fbDatabaseUrlInput");
+      const keyInput = document.getElementById("fbApiKeyInput");
 
-    function getBlobId() {
-      return CLOUD_BLOB_ID || safeGetStorage("maahad_blob_id_v1", "") || "";
-    }
-    function setBlobId(id) {
-      if (!id || !/^[A-Za-z0-9:-]+$/.test(id)) return;
-      CLOUD_BLOB_ID = id;
-      safeSetStorage("maahad_blob_id_v1", id);
-    }
-    let lastCloudError = "";
-
-    // ---- ntfy: only small messages, rate-limit aware (retry + back-off on 429) ----
-    async function ntfyPost(obj, tries = 4) {
-      for (let t = 0; t < tries; t++) {
-        try {
-          const r = await fetch(NTFY_URL, { method: "POST", body: JSON.stringify(obj) });
-          if (r.ok) return true;
-          await sleep(r.status === 429 ? 3000 * (t + 1) : 800);
-        } catch (e) {
-          await sleep(800);
-        }
+      if (apiKeyMatch && keyInput) {
+        keyInput.value = apiKeyMatch[1].trim();
       }
-      return false;
-    }
-
-    // ---- permanent cloud storage: several free backends, tried in order ----
-    const CLOUD_BACKENDS = [
-      "https://jsonblob.com/api/jsonBlob",
-      "https://superjsonblob.com/api/jsonBlob"
-    ];
-    async function fetchT(url, opts, ms = 15000) {
-      const ctl = new AbortController();
-      const timer = setTimeout(() => ctl.abort(), ms);
-      try {
-        return await fetch(url, Object.assign({}, opts, { signal: ctl.signal }));
-      } finally {
-        clearTimeout(timer);
+      if (dbUrlMatch && urlInput) {
+        urlInput.value = dbUrlMatch[1].trim();
+      } else if (projMatch && urlInput && !urlInput.value) {
+        urlInput.value = `https://${projMatch[1].trim()}-default-rtdb.firebaseio.com`;
+      }
+      if (projMatch) {
+        appState.firebaseConfig.projectId = projMatch[1].trim();
       }
     }
-    function splitBlobId(full) {
-      const parts = String(full).split(":");
-      if (parts.length === 2 && CLOUD_BACKENDS[Number(parts[0])]) return { api: CLOUD_BACKENDS[Number(parts[0])], id: parts[1] };
-      return { api: CLOUD_BACKENDS[0], id: parts[parts.length - 1] };
-    }
-    async function blobRead(full) {
-      const { api, id } = splitBlobId(full);
-      const r = await fetchT(`${api}/${id}`, { headers: { Accept: "application/json" }, cache: "no-store" });
-      if (!r.ok) throw new Error("قراءة السحابة " + r.status);
-      return await r.json();
-    }
-    async function blobWrite(full, data) {
-      const { api, id } = splitBlobId(full);
-      const r = await fetchT(`${api}/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(data)
-      });
-      if (!r.ok) throw new Error("كتابة السحابة " + r.status);
-    }
-    async function blobCreate(data) {
-      const errs = [];
-      for (let i = 0; i < CLOUD_BACKENDS.length; i++) {
-        try {
-          const r = await fetchT(CLOUD_BACKENDS[i], {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
-            body: JSON.stringify(data)
-          });
-          if (!r.ok) throw new Error("HTTP " + r.status);
-          let id = (r.headers.get("Location") || "").split("/").pop();
-          if (!id) {
-            try { const j = await r.clone().json(); if (j && typeof j.id === "string") id = j.id; } catch (e) {}
-          }
-          if (!id) throw new Error("لم يصل رقم التخزين");
-          return `${i}:${id}`;
-        } catch (e) {
-          errs.push(`${i + 1}) ${e && e.name === "AbortError" ? "انتهت المهلة" : (e && e.message) || e}`);
-        }
-      }
-      throw new Error(errs.join(" | "));
-    }
 
-    // ---- gzip helpers (make the ntfy fallback much smaller) ----
-    async function gzipB64(str) {
-      if (typeof CompressionStream === "undefined") return { z: 0, b64: encodeUtf8Base64(str) };
-      const cs = new CompressionStream("gzip");
-      const w = cs.writable.getWriter();
-      w.write(new TextEncoder().encode(str));
-      w.close();
-      const buf = new Uint8Array(await new Response(cs.readable).arrayBuffer());
-      let bin = "";
-      for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
-      return { z: 1, b64: btoa(bin) };
-    }
-    async function gunzipB64(b64) {
-      const bin = atob(b64);
-      const u = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
-      const ds = new DecompressionStream("gzip");
-      const w = ds.writable.getWriter();
-      w.write(u);
-      w.close();
-      return await new Response(ds.readable).text();
-    }
+    async function saveFirebaseConfigFromUI() {
+      const urlInput = document.getElementById("fbDatabaseUrlInput");
+      const keyInput = document.getElementById("fbApiKeyInput");
+      let dbUrl = urlInput ? urlInput.value.trim().replace(/\/+$/, "") : "";
+      const apiKey = keyInput ? keyInput.value.trim() : "";
 
-    function mergeScores(a, b) {
-      const seen = new Set();
-      const out = [];
-      [...(a || []), ...(b || [])].forEach(s => {
-        if (!s) return;
-        const k = `${s.studentName}|${s.examTitle}|${s.score}|${s.total}`;
-        if (!seen.has(k)) { seen.add(k); out.push(s); }
-      });
-      out.sort((x, y) => (y.percent || 0) - (x.percent || 0) || (y.score || 0) - (x.score || 0));
-      return out;
-    }
-
-    async function pushCloudSync(silent = false) {
-      appState.syncVersion = Date.now();
-      safeSetStorage("maahad_sync_version_v2", appState.syncVersion);
-      safeSetStorage("maahad_deleted_exams_v2", appState.deletedExamIds);
-
-      if (!navigator.onLine) {
-        updateCloudSyncBadge("offline", "محفوظ محلياً (بدون نت)");
+      if (!dbUrl || !apiKey) {
+        showToast("يرجى إدخال رابط قاعدة البيانات (Database URL) ومفتاح (Web API Key)!", "error");
         return;
       }
 
+      appState.firebaseConfig.databaseURL = dbUrl;
+      appState.firebaseConfig.apiKey = apiKey;
+      safeSetStorage("maahad_firebase_config_v3", appState.firebaseConfig);
+
+      updateCloudSyncBadge("syncing", "جاري اختبار الاتصال...");
       try {
-        updateCloudSyncBadge("syncing", "جاري النشر لكل الأجهزة...");
-        // NOTE: the admin PIN is deliberately NOT part of the synced data (the cloud topic is public)
-        const snapshot = {
-          v: appState.syncVersion,
-          exams: appState.exams,
-          deletedExamIds: appState.deletedExamIds || [],
-          subjects: appState.subjects,
-          announcement: appState.announcement,
-          allowRetake: appState.allowRetake,
-          adminEmails: appState.adminEmails
-        };
-
-        let ok = false;
-        let id = getBlobId();
-        if (id) {
-          try {
-            let remote = null;
-            try { remote = await blobRead(id); } catch (e) {}
-            snapshot.scores = mergeScores(remote && remote.scores, appState.leaderboard);
-            await blobWrite(id, snapshot);
-            ok = true;
-          } catch (e) {
-            lastCloudError = (e && e.message) || String(e);
-            id = "";
-          }
+        const testEndpoint = `${dbUrl}/meta.json`;
+        const res = await fetch(testEndpoint, { cache: "no-store" });
+        if (res.status === 401 || res.status === 403) {
+          updateCloudSyncBadge("error", "القراءة مقفلة في Rules");
+          showToast("⚠️ تم الاتصال، لكن قواعد الأمان (Rules) تمنع القراءة! اضغط «نسخ قواعد الأمان» وضعها في Firebase.", "error");
+          return;
         }
-        if (!ok) {
-          try {
-            snapshot.scores = mergeScores([], appState.leaderboard);
-            id = await blobCreate(snapshot);
-            setBlobId(id);
-            ok = true;
-          } catch (e) {
-            lastCloudError = (e && e.message) || String(e);
-            ok = false;
-          }
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
         }
-
-        if (ok) {
-          // tiny announcement so every open device refreshes and learns the storage id
-          await ntfyPost({ t: "blob_ping", v: appState.syncVersion, id: id });
-        } else {
-          // Fallback: throttled chunks over ntfy (temporary, ~12h)
-          const packed = await gzipB64(JSON.stringify(snapshot));
-          const b64 = packed.b64;
-          const chunkSize = 2600;
-          const totalChunks = Math.ceil(b64.length / chunkSize) || 1;
-          if (!silent) showToast(`☁️ التخزين الدائم غير متاح الآن، جاري الإرسال المؤقت (${totalChunks} جزء)...`, "info");
-          for (let i = 0; i < totalChunks; i++) {
-            const sent = await ntfyPost({
-              t: "state_chunk", v: appState.syncVersion, i: i, n: totalChunks, z: packed.z,
-              d: b64.slice(i * chunkSize, (i + 1) * chunkSize)
-            }, 6);
-            if (!sent) throw new Error("فشل إرسال الجزء " + (i + 1) + " من " + totalChunks);
-            await sleep(900);
-          }
-        }
-
-        updateCloudSyncBadge("ok", "متزامن لكل الأجهزة ✓");
-        if (!silent) {
-          showToast(ok
-            ? "☁️ تم الحفظ في السحابة الدائمة ومزامنة الامتحانات لكل الأجهزة!"
-            : "☁️ تم النشر مؤقتاً (12 ساعة) فقط لأن التخزين الدائم تعذر: " + lastCloudError, ok ? "success" : "info");
-        }
+        updateCloudSyncBadge("ok", "متصل بـ Firebase ✓");
+        showToast("✅ تم ربط قاعدة البيانات السحابية بنجاح! يمكنك الآن تسجيل الدخول كمشرف.");
+        await pullCloudSync(false);
+        subscribeLiveCloudSync();
       } catch (err) {
-        updateCloudSyncBadge("offline", "محفوظ على الجهاز");
-        if (!silent) showToast("تعذر النشر للسحابة (" + (lastCloudError || (err && err.message) || "خطأ شبكة") + "). تم الحفظ على هذا الجهاز، وحمّل نسخة الموقع index.html وارفعها لتصل الامتحانات للجميع.", "error");
+        updateCloudSyncBadge("error", "تعذر الاتصال بالرابط");
+        showToast("❌ تعذر الوصول إلى رابط قاعدة البيانات، تأكد من صحة Database URL!", "error");
+      }
+    }
+
+    function copyFirebaseSecurityRules() {
+      const rulesJson = `{
+  "rules": {
+    "meta": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "exams": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "leaderboard": {
+      ".read": true,
+      ".write": "auth != null",
+      "$scoreId": {
+        ".write": "(!data.exists() && newData.exists() && newData.hasChildren(['studentName', 'examTitle', 'subject', 'score', 'total', 'percent'])) || auth != null"
+      }
+    }
+  }
+}`;
+      copyTextToClipboard(rulesJson, "تم نسخ قواعد الأمان (Security Rules)! الصقها في تبويب Rules داخل Firebase Realtime Database 🛡️");
+    }
+
+    // ==================== FIREBASE AUTHENTICATION (REAL EMAIL/PASSWORD VERIFICATION) ====================
+    function getFirebaseAuthSignInUrl(apiKey) {
+      if (window._MOCK_FIREBASE_AUTH_URL) {
+        return `${window._MOCK_FIREBASE_AUTH_URL}/v1/accounts:signInWithPassword?key=${encodeURIComponent(apiKey)}`;
+      }
+      return `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(apiKey)}`;
+    }
+
+    function getFirebaseTokenRefreshUrl(apiKey) {
+      if (window._MOCK_FIREBASE_AUTH_URL) {
+        return `${window._MOCK_FIREBASE_AUTH_URL}/v1/token?key=${encodeURIComponent(apiKey)}`;
+      }
+      return `https://securetoken.googleapis.com/v1/token?key=${encodeURIComponent(apiKey)}`;
+    }
+
+    function getFirebasePasswordUpdateUrl(apiKey) {
+      if (window._MOCK_FIREBASE_AUTH_URL) {
+        return `${window._MOCK_FIREBASE_AUTH_URL}/v1/accounts:update?key=${encodeURIComponent(apiKey)}`;
+      }
+      return `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${encodeURIComponent(apiKey)}`;
+    }
+
+    async function computeSha256Hex(text) {
+      const msgBuffer = new TextEncoder().encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function buildAuthedDbUrl(path, token) {
+      const dbUrl = getCleanDatabaseUrl();
+      if (token && token !== "RTDB_CLOUD_VERIFIED") {
+        return `${dbUrl}${path}?auth=${encodeURIComponent(token)}`;
+      }
+      return `${dbUrl}${path}`;
+    }
+
+    async function getValidAdminIdToken() {
+      if (!appState.adminUnlocked || !appState.adminIdToken) {
+        return "";
+      }
+      if (appState.adminIdToken === "RTDB_CLOUD_VERIFIED") {
+        return "RTDB_CLOUD_VERIFIED";
+      }
+      // If token is still valid for at least 60 seconds, return it
+      if (appState.adminTokenExpiresAt && Date.now() < appState.adminTokenExpiresAt - 60000) {
+        return appState.adminIdToken;
+      }
+      // Otherwise refresh using refreshToken
+      const apiKey = (appState.firebaseConfig?.apiKey || "").trim();
+      if (!apiKey || !appState.adminRefreshToken) {
+        return appState.adminIdToken;
+      }
+      try {
+        const refreshUrl = getFirebaseTokenRefreshUrl(apiKey);
+        const res = await fetch(refreshUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(appState.adminRefreshToken)}`
+        });
+        if (!res.ok) return "";
+        const data = await res.json();
+        if (data && data.id_token) {
+          appState.adminIdToken = data.id_token;
+          appState.adminRefreshToken = data.refresh_token || appState.adminRefreshToken;
+          appState.adminTokenExpiresAt = Date.now() + (parseInt(data.expires_in, 10) || 3600) * 1000;
+          saveAdminTokenSession();
+          return appState.adminIdToken;
+        }
+      } catch (e) {
+        // Ignore refresh network error
+      }
+      return appState.adminIdToken;
+    }
+
+    function saveAdminTokenSession() {
+      const rememberCheck = document.getElementById("adminRememberCheckbox");
+      if (!rememberCheck || rememberCheck.checked) {
+        safeSetStorage("maahad_admin_jwt_session_v3", {
+          email: appState.adminEmail,
+          refreshToken: appState.adminRefreshToken
+        });
+      }
+    }
+
+    // ==================== SMART DELTA SYNC & REALTIME DATABASE OPERATIONS ====================
+    function buildMetaObject() {
+      const examsIndex = {};
+      appState.exams.forEach(ex => {
+        if (!ex || !ex.id) return;
+        examsIndex[ex.id] = {
+          id: ex.id,
+          title: ex.title,
+          subject: ex.subject,
+          subCategory: ex.subCategory || "",
+          badge: ex.badge || ex.subject,
+          duration: ex.duration || "20 دقيقة",
+          durationMinutes: ex.durationMinutes !== undefined ? ex.durationMinutes : 20,
+          description: ex.description || "",
+          qCount: Array.isArray(ex.questions) ? ex.questions.length : 0,
+          updatedAt: ex.updatedAt || appState.syncVersion || Date.now()
+        };
+      });
+      return {
+        syncVersion: appState.syncVersion || Date.now(),
+        announcement: appState.announcement,
+        allowRetake: Boolean(appState.allowRetake),
+        subjects: appState.subjects,
+        adminEmails: appState.adminEmails,
+        examsIndex: examsIndex
+      };
+    }
+
+    async function pushMetaToFirebase(silent = false) {
+      if (!isFirebaseConfigured()) return false;
+      const token = await getValidAdminIdToken();
+      if (!token) {
+        showToast("🔒 يجب تسجيل دخول المشرف أولاً لحفظ التعديلات في قاعدة البيانات!", "error");
+        return false;
+      }
+      const dbUrl = getCleanDatabaseUrl();
+      appState.syncVersion = Date.now();
+      safeSetStorage("maahad_sync_version_v2", appState.syncVersion);
+      const metaPayload = buildMetaObject();
+
+      try {
+        updateCloudSyncBadge("syncing", "جاري حفظ الإعدادات...");
+        const targetUrl = buildAuthedDbUrl("/meta.json", token);
+        const res = await fetch(targetUrl, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(metaPayload)
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        updateCloudSyncBadge("ok", "متصل بـ Firebase لحظياً ✓");
+        if (!silent) {
+          showToast("☁️ تم حفظ التعديلات ومزامنتها لجميع الهواتف والأجهزة لحظياً!");
+        }
+        return true;
+      } catch (err) {
+        updateCloudSyncBadge("error", "فشل الحفظ السحابي");
+        if (!silent) {
+          showToast("❌ تعذر الحفظ في قاعدة البيانات: تأكد من صلاحيات المشرف!", "error");
+        }
+        return false;
+      }
+    }
+
+    async function publishExamToFirebase(examObj) {
+      if (!isFirebaseConfigured()) {
+        showToast("⚠️ يرجى ربط قاعدة البيانات Firebase أولاً لنشر الامتحان لجميع الأجهزة!", "error");
+        return false;
+      }
+      const token = await getValidAdminIdToken();
+      if (!token) {
+        showToast("🔒 غير مصرح! يجب تسجيل دخول المشرف بحساب قاعدة البيانات لنشر الامتحانات.", "error");
+        return false;
+      }
+
+      const dbUrl = getCleanDatabaseUrl();
+      const now = Date.now();
+      examObj.updatedAt = now;
+      appState.syncVersion = now;
+
+      try {
+        updateCloudSyncBadge("syncing", "جاري رفع الامتحان للقاعدة...");
+        // 1. Upload full exam (even if 500+ questions) to /exams/{examId}.json in a single transaction
+        const examUrl = buildAuthedDbUrl(`/exams/${encodeURIComponent(examObj.id)}.json`, token);
+        const examRes = await fetch(examUrl, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(examObj)
+        });
+        if (!examRes.ok) {
+          throw new Error("Exam write rejected: HTTP " + examRes.status);
+        }
+
+        // 2. Update /meta.json index so all connected phones detect the new exam version immediately
+        await pushMetaToFirebase(true);
+        updateCloudSyncBadge("ok", "متصل بـ Firebase لحظياً ✓");
+        return true;
+      } catch (err) {
+        updateCloudSyncBadge("error", "رفض الكتابة (تحقق من الصلاحيات)");
+        showToast("❌ رفضت قاعدة البيانات رفع الامتحان! تأكد من تسجيل الدخول الصحيح وقواعد الأمان.", "error");
+        return false;
+      }
+    }
+
+    async function deleteExamsFromFirebase(examIds) {
+      if (!isFirebaseConfigured() || !Array.isArray(examIds) || examIds.length === 0) return false;
+      const token = await getValidAdminIdToken();
+      if (!token) {
+        showToast("🔒 غير مصرح! الحذف متاح للمشرف المسجل فقط.", "error");
+        return false;
+      }
+      const dbUrl = getCleanDatabaseUrl();
+      try {
+        updateCloudSyncBadge("syncing", "جاري الحذف من القاعدة...");
+        for (const id of examIds) {
+          const delUrl = buildAuthedDbUrl(`/exams/${encodeURIComponent(id)}.json`, token);
+          await fetch(delUrl, { method: "DELETE" });
+        }
+        await pushMetaToFirebase(true);
+        updateCloudSyncBadge("ok", "متصل بـ Firebase لحظياً ✓");
+        return true;
+      } catch (e) {
+        updateCloudSyncBadge("error", "تعذر الحذف");
+        return false;
       }
     }
 
     async function pushLeaderboardScoreToCloud(entry) {
-      if (!navigator.onLine) return;
-      ntfyPost({ t: "score_entry", v: Date.now(), entry: entry }, 2);
-      const id = getBlobId();
-      if (!id) return;
+      if (!navigator.onLine || !isFirebaseConfigured()) return false;
+      const dbUrl = getCleanDatabaseUrl();
       try {
-        const b = await blobRead(id);
-        b.scores = mergeScores(b.scores, [entry]);
-        await blobWrite(id, b);
+        // Students POST a new score to /leaderboard.json (allowed by Security Rules without Admin auth)
+        const postUrl = `${dbUrl}/leaderboard.json`;
+        const payload = Object.assign({}, entry, { timestamp: Date.now() });
+        const res = await fetch(postUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        return res.ok;
       } catch (e) {
-        // Ignore network errors
+        return false;
       }
     }
 
@@ -1797,198 +2114,196 @@
       if (!navigator.onLine) {
         updateCloudSyncBadge("offline", "يعمل بدون نت");
         if (showNotification) {
-          showToast("📴 أنت تعمل الآن في وضع بدون إنترنت — جميع الامتحانات المحفوظة متاحة للحل!", "info");
+          showToast("📴 أنت تعمل بدون إنترنت — الامتحانات المحفوظة على جهازك متاحة للحل!", "info");
         }
         return;
       }
-
+      if (!isFirebaseConfigured()) {
+        updateCloudSyncBadge("offline", "بانتظار ربط القاعدة");
+        return;
+      }
       if (isSyncingCloud) return;
       isSyncingCloud = true;
-      updateCloudSyncBadge("syncing", "جاري التحديث...");
+      updateCloudSyncBadge("syncing", "جاري التحديث الذكي...");
 
+      const dbUrl = getCleanDatabaseUrl();
       try {
-        const versionChunks = {};
-        const remoteScores = [];
-        let newestPing = null;
+        // 1. Fetch lightweight /meta.json first (Smart Delta Check)
+        const metaUrl = `${dbUrl}/meta.json`;
+        const metaRes = await fetch(metaUrl, { cache: "no-store" });
+        if (metaRes.ok) {
+          const remoteMeta = await metaRes.json();
+          if (remoteMeta && typeof remoteMeta === "object") {
+            let uiNeedsUpdate = false;
 
-        // 1) ntfy (best effort): learn the storage id, collect scores / fallback chunks
-        try {
-          const res = await fetch(NTFY_URL + "/json?poll=1&since=all", { cache: "no-store" });
-          if (res.ok) {
-            const text = await res.text();
-            for (const line of text.split("\n").map(l => l.trim()).filter(Boolean)) {
-              try {
-                const outer = JSON.parse(line);
-                if (outer.event !== "message" || !outer.message) continue;
-                const inner = JSON.parse(outer.message);
-                if (inner.t === "state_chunk" && inner.v && inner.n) {
-                  if (!versionChunks[inner.v]) versionChunks[inner.v] = { n: inner.n, parts: {}, z: inner.z ? 1 : 0 };
-                  versionChunks[inner.v].parts[inner.i] = inner.d;
-                } else if (inner.t === "score_entry" && inner.entry) {
-                  remoteScores.push(inner.entry);
-                } else if (inner.t === "blob_ping" && inner.id) {
-                  if (!newestPing || inner.v > newestPing.v) newestPing = inner;
-                }
-              } catch (e) {}
-            }
-          }
-        } catch (e) {}
-
-        if (!getBlobId() && newestPing) setBlobId(newestPing.id);
-
-        // 2) permanent storage (primary source)
-        let remoteState = null;
-        let latestV = 0;
-        const id = getBlobId();
-        if (id) {
-          try {
-            const b = await blobRead(id);
-            if (b && (Array.isArray(b.exams) || Array.isArray(b.subjects))) {
-              remoteState = b;
-              latestV = Number(b.v) || 0;
-            }
-            if (b && Array.isArray(b.scores)) remoteScores.push(...b.scores);
-          } catch (e) {}
-        }
-
-        // 3) fallback: reassemble ntfy chunks
-        if (!remoteState) {
-          const completeVersions = Object.keys(versionChunks)
-            .map(Number)
-            .filter(v => {
-              const grp = versionChunks[v];
-              return grp && Object.keys(grp.parts).length === grp.n;
-            })
-            .sort((a, b) => b - a);
-          if (completeVersions.length > 0) {
-            latestV = completeVersions[0];
-            const grp = versionChunks[latestV];
-            let fullB64 = "";
-            for (let i = 0; i < grp.n; i++) fullB64 += grp.parts[i];
-            try { remoteState = JSON.parse(grp.z ? await gunzipB64(fullB64) : decodeUtf8Base64(fullB64)); } catch (e) { remoteState = null; }
-          }
-        }
-
-        let stateUpdated = false;
-        if (remoteState) {
-          if (latestV > (appState.syncVersion || 0) || (appState.exams.length === 0 && Array.isArray(remoteState.exams) && remoteState.exams.length > 0)) {
-            appState.syncVersion = latestV;
-            safeSetStorage("maahad_sync_version_v2", latestV);
-
-            if (Array.isArray(remoteState.deletedExamIds)) {
-              appState.deletedExamIds = remoteState.deletedExamIds;
-              safeSetStorage("maahad_deleted_exams_v2", appState.deletedExamIds);
-            }
-            if (Array.isArray(remoteState.exams)) {
-              const deletedSet = new Set(appState.deletedExamIds || []);
-              const mergedExams = [];
-              const seenIds = new Set();
-              remoteState.exams.forEach(ex => {
-                if (ex && ex.id && !deletedSet.has(ex.id) && !seenIds.has(ex.id)) {
-                  seenIds.add(ex.id);
-                  mergedExams.push(ex);
-                }
-              });
-              appState.exams = mergedExams;
-              safeSetStorage("maahad_exams_v2", appState.exams);
-            }
-            if (Array.isArray(remoteState.subjects) && remoteState.subjects.length > 0) {
-              appState.subjects = remoteState.subjects;
+            if (Array.isArray(remoteMeta.subjects) && remoteMeta.subjects.length > 0) {
+              appState.subjects = remoteMeta.subjects;
               safeSetStorage("maahad_subjects_v2", appState.subjects);
+              uiNeedsUpdate = true;
             }
-            if (remoteState.announcement) {
-              appState.announcement = remoteState.announcement;
+            if (remoteMeta.announcement) {
+              appState.announcement = remoteMeta.announcement;
               safeSetStorage("maahad_announcement_v2", appState.announcement);
               renderAnnouncement();
             }
-            if (typeof remoteState.allowRetake === "boolean") {
-              appState.allowRetake = remoteState.allowRetake;
+            if (typeof remoteMeta.allowRetake === "boolean") {
+              appState.allowRetake = remoteMeta.allowRetake;
               safeSetStorage("maahad_allow_retake_v2", appState.allowRetake);
               updateRetakeUIButtons();
             }
-            if (Array.isArray(remoteState.adminEmails) && remoteState.adminEmails.length > 0) {
-              appState.adminEmails = remoteState.adminEmails;
+            if (Array.isArray(remoteMeta.adminEmails) && remoteMeta.adminEmails.length > 0) {
+              appState.adminEmails = remoteMeta.adminEmails;
               safeSetStorage("maahad_admin_emails_v2", appState.adminEmails);
             }
-            // admin PIN is never read from the cloud
-            stateUpdated = true;
-          } else if ((appState.syncVersion || 0) > latestV && appState.exams.length > 0 && appState.adminUnlocked) {
-            pushCloudSync(true);
+
+            // Smart Delta Loading for Exams:
+            // Compare remoteMeta.examsIndex against locally cached exams in appState.exams
+            const remoteIndex = remoteMeta.examsIndex || {};
+            const remoteExamIds = Object.keys(remoteIndex);
+            const localExamMap = {};
+            appState.exams.forEach(ex => {
+              if (ex && ex.id) localExamMap[ex.id] = ex;
+            });
+
+            const nextExamsList = [];
+            let examsChanged = false;
+
+            // Check if any local exam was deleted on the server
+            if (appState.exams.some(ex => !remoteIndex[ex.id])) {
+              examsChanged = true;
+            }
+
+            for (const exId of remoteExamIds) {
+              const idxInfo = remoteIndex[exId];
+              const localEx = localExamMap[exId];
+
+              // Only download /exams/{exId}.json if we don't have it cached OR its updatedAt is newer!
+              if (localEx && Array.isArray(localEx.questions) && localEx.questions.length > 0 && localEx.updatedAt === idxInfo.updatedAt) {
+                nextExamsList.push(localEx);
+              } else {
+                const exUrl = `${dbUrl}/exams/${encodeURIComponent(exId)}.json`;
+                const exRes = await fetch(exUrl, { cache: "no-store" });
+                if (exRes.ok) {
+                  const fullExam = await exRes.json();
+                  if (fullExam && fullExam.id && Array.isArray(fullExam.questions)) {
+                    fullExam.updatedAt = idxInfo.updatedAt || Date.now();
+                    nextExamsList.push(fullExam);
+                    examsChanged = true;
+                  }
+                } else if (localEx) {
+                  nextExamsList.push(localEx);
+                }
+              }
+            }
+
+            nextExamsList.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+            if (examsChanged || nextExamsList.length !== appState.exams.length) {
+              appState.exams = nextExamsList;
+              await saveExamsToLocalCache(appState.exams);
+              uiNeedsUpdate = true;
+            }
+
+            appState.syncVersion = remoteMeta.syncVersion || Date.now();
+            safeSetStorage("maahad_sync_version_v2", appState.syncVersion);
+
+            if (uiNeedsUpdate) {
+              syncSubjectsUIEverywhere();
+              renderExamsGrid();
+              populateTutorQuestionsDropdown();
+              renderAdminExamsList();
+              renderAdminEmailsList();
+            }
           }
-        } else if (appState.exams.length > 0 && appState.adminUnlocked) {
-          // Cloud is empty/unreachable id but the admin device has exams -> seed it
-          pushCloudSync(true);
         }
 
-        // Merge remote student scores into Leaderboard
-        if (remoteScores.length > 0) {
-          const before = appState.leaderboard.length;
-          const merged = mergeScores(appState.leaderboard, remoteScores);
-          if (merged.length !== before) {
-            appState.leaderboard = merged;
-            safeSetStorage("maahad_leaderboard_v2", appState.leaderboard);
-            stateUpdated = true;
-          }
-        }
+        // 2. Fetch Leaderboard Scores
+        await pullLeaderboardFromFirebase();
 
-        if (stateUpdated) {
-          syncSubjectsUIEverywhere();
-          renderExamsGrid();
-          renderLeaderboard();
-          populateTutorQuestionsDropdown();
-          renderAdminExamsList();
-          renderAdminEmailsList();
-          if (!appState.activeExamId) checkUrlHashForExam();
-        }
-
-        updateCloudSyncBadge("ok", "متزامن لكل الأجهزة ✓");
+        updateCloudSyncBadge("ok", "متصل بـ Firebase لحظياً ✓");
         if (showNotification) {
-          showToast(`☁️ تم التحديث بنجاح! متاح الآن (${appState.exams.length}) امتحانات على جميع الأجهزة.`);
+          showToast(`☁️ تم التحديث الذكي! متاح الآن (${appState.exams.length}) امتحانات على جميع الأجهزة.`);
         }
       } catch (err) {
-        updateCloudSyncBadge("offline", "محفوظ على الجهاز");
+        updateCloudSyncBadge("error", "تعذر التحديث السحابي");
       } finally {
         isSyncingCloud = false;
       }
     }
 
-    let cloudPollTimer = null;
-    function subscribeLiveCloudSync() {
-      if (!navigator.onLine) return;
-      if (!cloudPollTimer) {
-        cloudPollTimer = setInterval(() => { if (!document.hidden) pullCloudSync(false); }, 90000);
-        document.addEventListener("visibilitychange", () => { if (!document.hidden) pullCloudSync(false); });
-      }
-      if (typeof EventSource === "undefined") return;
+    async function pullLeaderboardFromFirebase() {
+      if (!navigator.onLine || !isFirebaseConfigured()) return;
+      const dbUrl = getCleanDatabaseUrl();
       try {
-        if (cloudEventSource) cloudEventSource.close();
-        cloudEventSource = new EventSource(`${CLOUD_SYNC_URL}/sse`);
-        cloudEventSource.onmessage = function (ev) {
-          try {
-            const data = JSON.parse(ev.data);
-            if (data && data.message) {
-              const inner = JSON.parse(data.message);
-              if (inner.t === "blob_ping") {
-                if (!getBlobId() && inner.id) setBlobId(inner.id);
-                if (inner.v > (appState.syncVersion || 0)) setTimeout(() => pullCloudSync(false), 600);
-              } else if (inner.t === "state_chunk" && inner.i === inner.n - 1 && inner.v > (appState.syncVersion || 0)) {
-                setTimeout(() => pullCloudSync(false), 600);
-              } else if (inner.t === "score_entry") {
-                setTimeout(() => pullCloudSync(false), 600);
-              }
-            }
-          } catch (e) {
-            // Ignore
-          }
-        };
+        const lbUrl = `${dbUrl}/leaderboard.json`;
+        const lbRes = await fetch(lbUrl, { cache: "no-store" });
+        if (!lbRes.ok) return;
+        const lbData = await lbRes.json();
+        if (!lbData || typeof lbData !== "object") {
+          appState.leaderboard = [];
+          safeSetStorage("maahad_leaderboard_v2", []);
+          renderLeaderboard();
+          return;
+        }
+        const entries = Object.values(lbData).filter(item => item && item.studentName && item.examTitle);
+        entries.sort((a, b) => (b.percent - a.percent) || (b.score - a.score) || ((b.timestamp || 0) - (a.timestamp || 0)));
+        appState.leaderboard = entries;
+        safeSetStorage("maahad_leaderboard_v2", appState.leaderboard);
+        renderLeaderboard();
       } catch (e) {
-        // Ignore SSE errors
+        // Ignore
       }
+    }
+
+    function subscribeLiveCloudSync() {
+      if (!navigator.onLine || !isFirebaseConfigured()) return;
+      const dbUrl = getCleanDatabaseUrl();
+
+      // 1. Real-Time Server-Sent Events (SSE) on Firebase /meta.json & /leaderboard.json
+      if (typeof EventSource !== "undefined") {
+        try {
+          if (firebaseMetaSSE) firebaseMetaSSE.close();
+          firebaseMetaSSE = new EventSource(`${dbUrl}/meta.json`);
+          firebaseMetaSSE.addEventListener("put", function () {
+            pullCloudSync(false);
+          });
+          firebaseMetaSSE.addEventListener("patch", function () {
+            pullCloudSync(false);
+          });
+        } catch (e) {}
+
+        try {
+          if (firebaseScoresSSE) firebaseScoresSSE.close();
+          firebaseScoresSSE = new EventSource(`${dbUrl}/leaderboard.json`);
+          firebaseScoresSSE.addEventListener("put", function () {
+            pullLeaderboardFromFirebase();
+          });
+          firebaseScoresSSE.addEventListener("patch", function () {
+            pullLeaderboardFromFirebase();
+          });
+        } catch (e) {}
+      }
+
+      // 2. Lightweight 15-byte syncVersion heartbeat check every 6s for mobile browsers that throttle SSE
+      if (firebasePollTimer) clearInterval(firebasePollTimer);
+      firebasePollTimer = setInterval(async () => {
+        if (!navigator.onLine || !isFirebaseConfigured() || document.visibilityState === "hidden") return;
+        try {
+          const verUrl = `${dbUrl}/meta/syncVersion.json`;
+          const res = await fetch(verUrl, { cache: "no-store" });
+          if (res.ok) {
+            const remoteVer = await res.json();
+            if (remoteVer && Number(remoteVer) !== Number(appState.syncVersion)) {
+              pullCloudSync(false);
+            }
+          }
+        } catch (e) {}
+      }, 6000);
     }
 
     function manualSyncAllDevices(fromAdmin = false) {
       if (fromAdmin && appState.adminUnlocked) {
-        pushCloudSync(false);
+        pushMetaToFirebase(false);
       } else {
         pullCloudSync(true);
       }
@@ -2225,38 +2540,67 @@
     function editExamDurationPrompt(examId) {
       const exam = appState.exams.find(e => e.id === examId);
       if (!exam) return;
+      appState.editingDurationExamId = examId;
       const currentMins = exam.durationMinutes !== undefined ? exam.durationMinutes : (exam.duration?.match(/\d+/)?.[0] || 20);
-      const input = prompt(`⏱️ تعديل وقت امتحان (${exam.title}):\nأدخل مدة الامتحان بالدقائق (مثال: 10 أو 15 أو 20 أو 30 أو 45 أو 60)، أو اكتب 0 لوقت مفتوح بدون مؤقت:`, currentMins);
-      if (input === null) return;
-      const mins = parseInt(normalizeDigitsAndSpaces(input), 10);
+      const modal = document.getElementById("durationEditModal");
+      const sub = document.getElementById("durationEditModalSubtitle");
+      const input = document.getElementById("durationEditModalInput");
+      if (sub) sub.textContent = `تعديل وقت (${exam.title}) بالدقائق — أو اكتب 0 لوقت مفتوح بدون مؤقت:`;
+      if (input) input.value = String(currentMins);
+      if (modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+    }
+
+    function closeDurationEditModal() {
+      const modal = document.getElementById("durationEditModal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+      appState.editingDurationExamId = null;
+    }
+
+    async function confirmExamDurationEdit() {
+      const exam = appState.exams.find(e => e.id === appState.editingDurationExamId);
+      const input = document.getElementById("durationEditModalInput");
+      if (!exam || !input) {
+        closeDurationEditModal();
+        return;
+      }
+      const mins = parseInt(normalizeDigitsAndSpaces(input.value), 10);
       if (isNaN(mins) || mins < 0) {
-        showToast("يرجى إدخال عدد دقائق صحيح!", "error");
+        showToast("يرجى إدخال عدد دقائق صحيح (0 أو أكثر)!", "error");
         return;
       }
       exam.durationMinutes = mins;
       exam.duration = mins > 0 ? `${mins} دقيقة` : "وقت مفتوح";
-      safeSetStorage("maahad_exams_v2", appState.exams);
+      exam.updatedAt = Date.now();
+      closeDurationEditModal();
+      await saveExamsToLocalCache(appState.exams);
       renderExamsGrid();
       renderAdminExamsList();
-      pushCloudSync(true);
+      await publishExamToFirebase(exam);
       showToast(`✅ تم تعديل وقت الامتحان إلى (${exam.duration}) ومزامنته لكل الأجهزة!`);
     }
 
     // ==================== INITIALIZATION ====================
-    function initApp() {
-      // One-time security reset: wipe sessions/PINs saved by the old (insecure) version
-      if (!safeGetStorage("maahad_security_reset_v3", false)) {
-        safeRemoveStorage("maahad_admin_session_v2");
-        safeRemoveStorage("maahad_saved_admin_creds_v2");
-        safeRemoveStorage("maahad_custom_pin_v2");
-        safeSetStorage("maahad_security_reset_v3", true);
+    async function initApp() {
+      // 1. Load Firebase Configuration (from BUILTIN_FIREBASE_CONFIG or localStorage)
+      const savedFbConfig = safeGetStorage("maahad_firebase_config_v3", null);
+      if (BUILTIN_FIREBASE_CONFIG.databaseURL && BUILTIN_FIREBASE_CONFIG.apiKey) {
+        appState.firebaseConfig = Object.assign({}, BUILTIN_FIREBASE_CONFIG);
+      } else if (savedFbConfig && savedFbConfig.databaseURL && savedFbConfig.apiKey) {
+        appState.firebaseConfig = savedFbConfig;
       }
-      // Cloud blob id from a shared link (#cb=ID) or a previous visit
-      try {
-        const m = (window.location.hash || "").match(/[#&]cb=([A-Za-z0-9:-]+)/);
-        if (m) setBlobId(m[1]);
-      } catch (e) {}
-      // Load custom subjects
+
+      const urlInput = document.getElementById("fbDatabaseUrlInput");
+      const keyInput = document.getElementById("fbApiKeyInput");
+      if (urlInput && appState.firebaseConfig.databaseURL) urlInput.value = appState.firebaseConfig.databaseURL;
+      if (keyInput && appState.firebaseConfig.apiKey) keyInput.value = appState.firebaseConfig.apiKey;
+
+      // 2. Load custom subjects
       const savedSubjects = safeGetStorage("maahad_subjects_v2", null);
       if (savedSubjects && Array.isArray(savedSubjects) && savedSubjects.length > 0) {
         appState.subjects = savedSubjects;
@@ -2264,15 +2608,10 @@
         appState.subjects = JSON.parse(JSON.stringify(DEFAULT_SUBJECTS));
       }
 
-      // Load saved exams
-      const savedExams = safeGetStorage("maahad_exams_v2", null);
-      if (savedExams && Array.isArray(savedExams)) {
-        appState.exams = savedExams;
-      } else {
-        appState.exams = JSON.parse(JSON.stringify(INITIAL_EXAMS));
-      }
+      // 3. Load cached exams from IndexedDB / localStorage
+      appState.exams = await loadExamsFromLocalCache();
 
-      // Load saved leaderboard
+      // 4. Load cached leaderboard
       const savedBoard = safeGetStorage("maahad_leaderboard_v2", null);
       if (savedBoard && Array.isArray(savedBoard)) {
         appState.leaderboard = savedBoard;
@@ -2280,20 +2619,7 @@
         appState.leaderboard = JSON.parse(JSON.stringify(INITIAL_LEADERBOARD));
       }
 
-      // Load saved co-admin emails & custom PIN (always keeping auman12356@gmail.com)
-      const savedAdminEmails = safeGetStorage("maahad_admin_emails_v2", null);
-      if (savedAdminEmails && Array.isArray(savedAdminEmails) && savedAdminEmails.length > 0) {
-        appState.adminEmails = savedAdminEmails;
-      }
-      if (!appState.adminEmails.map(e => e.toLowerCase()).includes("auman12356@gmail.com")) {
-        appState.adminEmails.unshift("auman12356@gmail.com");
-      }
-      const savedCustomPin = safeGetStorage("maahad_custom_pin_v2", "");
-      if (savedCustomPin) {
-        appState.adminPin = savedCustomPin;
-      }
-
-      // Load saved student name
+      // 5. Load student name
       const savedName = safeGetStorage("maahad_student_name_v2", "");
       if (savedName) {
         appState.studentName = savedName;
@@ -2302,25 +2628,18 @@
       }
       updateStudentNameUI();
 
-      // Load saved announcement
+      // 6. Load announcement & retake setting
       const savedAnn = safeGetStorage("maahad_announcement_v2", "");
-      if (savedAnn) {
-        appState.announcement = savedAnn;
-      }
+      if (savedAnn) appState.announcement = savedAnn;
       renderAnnouncement();
 
-      // Load saved allowRetake & completed exams
       const savedRetake = safeGetStorage("maahad_allow_retake_v2", null);
-      if (typeof savedRetake === "boolean") {
-        appState.allowRetake = savedRetake;
-      }
+      if (typeof savedRetake === "boolean") appState.allowRetake = savedRetake;
       const savedCompleted = safeGetStorage("maahad_completed_exams_v2", {});
-      if (savedCompleted && typeof savedCompleted === "object") {
-        appState.completedExamIds = savedCompleted;
-      }
+      if (savedCompleted && typeof savedCompleted === "object") appState.completedExamIds = savedCompleted;
       updateRetakeUIButtons();
 
-      // Load theme & device mode (auto-detect mobile screen width if not set)
+      // 7. Load theme & device mode
       const savedTheme = safeGetStorage("maahad_theme_v2", "dark");
       setAppTheme(savedTheme, true);
 
@@ -2328,35 +2647,16 @@
       const savedDeviceMode = safeGetStorage("maahad_device_mode_v2", defaultDevMode);
       setDeviceViewMode(savedDeviceMode, true);
 
-      // Load sync version and deletedExamIds
       appState.syncVersion = safeGetStorage("maahad_sync_version_v2", 0);
-      appState.deletedExamIds = safeGetStorage("maahad_deleted_exams_v2", []);
 
-      // Restore saved Admin Email & Password into login inputs (so Admin never retypes them!)
-      restoreSavedAdminCredentialsToForm();
+      // 8. Ensure Admin panel is LOCKED by default until real Firebase Auth verification succeeds
+      appState.adminUnlocked = false;
+      appState.adminIdToken = "";
+      await restoreSavedAdminCredentialsToForm();
 
-      // Check persistent Admin session
-      const savedAdminSession = safeGetStorage("maahad_admin_session_v2", null);
-      if (
-        savedAdminSession && savedAdminSession.unlocked &&
-        normalizeDigitsAndSpaces(savedAdminSession.pin || "") === normalizeDigitsAndSpaces(appState.adminPin || ADMIN_DEFAULT_PIN) &&
-        appState.adminEmails.map(e => e.toLowerCase()).includes(String(savedAdminSession.email || "").toLowerCase())
-      ) {
-        appState.adminUnlocked = true;
-        appState.adminEmail = savedAdminSession.email || "auman12356@gmail.com";
-        if (savedAdminSession.email && !appState.adminEmails.includes(savedAdminSession.email)) {
-          appState.adminEmails.push(savedAdminSession.email);
-        }
-        applyAdminUnlockedUI();
-      }
-
-      // Sync dynamic subjects everywhere
+      // 9. Sync UI & initial renders
       syncSubjectsUIEverywhere();
-
-      // Check URL hash for shared exam link
       checkUrlHashForExam();
-
-      // Initial renders
       renderExamsGrid();
       renderLeaderboard();
       populateTutorQuestionsDropdown();
@@ -2364,13 +2664,19 @@
       renderAdminExamsList();
       renderAdminEmailsList();
 
-      // Start automatic Multi-Device Cloud Sync & Offline listener
-      pullCloudSync(false);
-      subscribeLiveCloudSync();
-      window.addEventListener("online", () => {
-        updateCloudSyncBadge("ok", "متصل ومتزامن ✓");
+      // 10. Start Smart Delta Sync & Live SSE Listeners from Firebase
+      if (isFirebaseConfigured()) {
         pullCloudSync(false);
         subscribeLiveCloudSync();
+      } else {
+        updateCloudSyncBadge("offline", "بانتظار ربط القاعدة");
+      }
+
+      window.addEventListener("online", () => {
+        if (isFirebaseConfigured()) {
+          pullCloudSync(false);
+          subscribeLiveCloudSync();
+        }
       });
       window.addEventListener("offline", () => {
         updateCloudSyncBadge("offline", "يعمل بدون نت");
@@ -2466,7 +2772,7 @@
       }
 
       safeSetStorage("maahad_subjects_v2", appState.subjects);
-      pushCloudSync(true);
+      pushMetaToFirebase(true);
       if (nameInput) nameInput.value = "";
       if (branchesInput) branchesInput.value = "";
       syncSubjectsUIEverywhere();
@@ -2539,7 +2845,7 @@
     function checkUrlHashForExam() {
       const hash = window.location.hash || "";
       if (hash.startsWith("#exam=")) {
-        const examId = decodeURIComponent(hash.replace("#exam=", "").split("&")[0]);
+        const examId = decodeURIComponent(hash.replace("#exam=", ""));
         const found = appState.exams.find(e => e.id === examId);
         if (found) {
           setTimeout(() => openExam(examId), 150);
@@ -2887,7 +3193,7 @@
     function toggleAllowRetakeSetting() {
       appState.allowRetake = !appState.allowRetake;
       safeSetStorage("maahad_allow_retake_v2", appState.allowRetake);
-      pushCloudSync(true);
+      pushMetaToFirebase(true);
       updateRetakeUIButtons();
       showToast(
         appState.allowRetake
@@ -3458,11 +3764,23 @@
       copyTextToClipboard(text, "تم نسخ قائمة المتصدرين! يمكنك إرسالها في جروب المعهد الآن 🏆");
     }
 
-    function clearAllLeaderboardEntries() {
+    async function clearAllLeaderboardEntries() {
+      if (!appState.adminUnlocked || !appState.adminIdToken) {
+        showToast("🔒 غير مصرح! تصفير لوحة الشرف متاح للمشرف فقط.", "error");
+        return;
+      }
       appState.leaderboard = [];
       safeSetStorage("maahad_leaderboard_v2", []);
       renderLeaderboard();
-      showToast("تم تصفير لوحة الشرف بنجاح ✓");
+      if (isFirebaseConfigured()) {
+        const token = await getValidAdminIdToken();
+        const dbUrl = getCleanDatabaseUrl();
+        try {
+          const delLbUrl = buildAuthedDbUrl("/leaderboard.json", token);
+          await fetch(delLbUrl, { method: "DELETE" });
+        } catch (e) {}
+      }
+      showToast("🗑️ تم تصفير لوحة الشرف على جميع الأجهزة بنجاح ✓");
     }
 
     // ==================== AI TUTOR (المعلم الذكي بدون غش) ====================
@@ -3652,116 +3970,278 @@
       }
     }
 
-    function restoreSavedAdminCredentialsToForm() {
-      const emailInput = document.getElementById("adminEmailInput");
-      const pinInput = document.getElementById("adminPinInput");
-      const badge = document.getElementById("savedCredsNoticeBadge");
-      const savedCreds = safeGetStorage("maahad_saved_admin_creds_v2", null);
-
-      if (savedCreds && savedCreds.email) {
-        if (emailInput) emailInput.value = savedCreds.email;
-        if (pinInput && savedCreds.pin) pinInput.value = savedCreds.pin;
-        if (badge && savedCreds.pin) badge.classList.remove("hidden");
+    async function restoreSavedAdminCredentialsToForm() {
+      const savedJwt = safeGetStorage("maahad_admin_jwt_session_v3", null);
+      const apiKey = (appState.firebaseConfig?.apiKey || "").trim();
+      if (savedJwt && savedJwt.refreshToken === "RTDB_CLOUD_VERIFIED" && savedJwt.email) {
+        appState.adminIdToken = "RTDB_CLOUD_VERIFIED";
+        appState.adminRefreshToken = "RTDB_CLOUD_VERIFIED";
+        appState.adminTokenExpiresAt = Date.now() + 86400000 * 30;
+        appState.adminEmail = savedJwt.email;
+        appState.adminUnlocked = true;
+        applyAdminUnlockedUI();
+        return;
+      }
+      if (savedJwt && savedJwt.refreshToken && apiKey && navigator.onLine) {
+        try {
+          const refreshUrl = getFirebaseTokenRefreshUrl(apiKey);
+          const res = await fetch(refreshUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(savedJwt.refreshToken)}`
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.id_token) {
+              appState.adminIdToken = data.id_token;
+              appState.adminRefreshToken = data.refresh_token || savedJwt.refreshToken;
+              appState.adminTokenExpiresAt = Date.now() + (parseInt(data.expires_in, 10) || 3600) * 1000;
+              appState.adminEmail = savedJwt.email || "المشرف";
+              appState.adminUnlocked = true;
+              applyAdminUnlockedUI();
+              return;
+            }
+          }
+        } catch (e) {}
       }
     }
 
     function clearSavedAdminCredentials() {
-      safeRemoveStorage("maahad_saved_admin_creds_v2");
-      safeRemoveStorage("maahad_admin_session_v2");
+      safeRemoveStorage("maahad_admin_jwt_session_v3");
+      appState.adminUnlocked = false;
+      appState.adminIdToken = "";
+      appState.adminRefreshToken = "";
       const emailInput = document.getElementById("adminEmailInput");
       const pinInput = document.getElementById("adminPinInput");
       const badge = document.getElementById("savedCredsNoticeBadge");
       if (emailInput) emailInput.value = "";
       if (pinInput) pinInput.value = "";
       if (badge) badge.classList.add("hidden");
-      showToast("🗑️ تم مسح البريد وكلمة السر المحفوظة من هذا الجهاز بنجاح.");
+      showToast("🗑️ تم مسح جلسة المشرف من هذا الجهاز بنجاح.");
     }
 
-    function unlockAdminPanel() {
+    async function unlockAdminPanel() {
       const emailInput = document.getElementById("adminEmailInput");
       const pinInput = document.getElementById("adminPinInput");
-      const rememberCheck = document.getElementById("adminRememberCheckbox");
-      const saveCredsCheck = document.getElementById("adminSaveCredsCheckbox");
+      const submitBtn = document.getElementById("adminLoginSubmitBtn");
 
       const emailVal = emailInput ? emailInput.value.trim().toLowerCase() : "";
-      const rawPin = pinInput ? pinInput.value : "";
-      const pinVal = normalizeDigitsAndSpaces(rawPin);
-      const validPin = normalizeDigitsAndSpaces(appState.adminPin || ADMIN_DEFAULT_PIN);
+      const passwordVal = pinInput ? pinInput.value.trim() : "";
 
       if (!emailVal || !emailVal.includes("@")) {
-        showToast("يرجى كتابة بريدك الإلكتروني أولاً!", "error");
+        showToast("يرجى إدخال البريد الإلكتروني للمشرف أولاً!", "error");
         return;
       }
 
-      if (!pinVal) {
-        showToast("يرجى كتابة الرقم السري الذي تريده!", "error");
+      if (!passwordVal) {
+        showToast("يرجى إدخال كلمة المرور الخاصة بحساب المشرف!", "error");
         return;
       }
 
-      // 1. Check that the email is strictly in the authorized Admin Emails list (auman12356@gmail.com + any co-admin added by them)
-      const registeredEmails = appState.adminEmails.map(e => e.toLowerCase()).filter(Boolean);
-      if (!registeredEmails.includes("auman12356@gmail.com")) {
-        registeredEmails.unshift("auman12356@gmail.com");
-      }
-
-      if (!registeredEmails.includes(emailVal)) {
-        showToast("❌ هذا البريد الإلكتروني غير مسجل كمشرف! لا يُسمح بالدخول لغير المشرف.", "error");
+      if (!isFirebaseConfigured()) {
+        const setupBox = document.getElementById("firebaseSetupCollapseBox");
+        if (setupBox) setupBox.classList.remove("hidden");
+        showToast("⚠️ يرجى إدخال رابط قاعدة البيانات (Database URL) ومفتاح (Web API Key) في صندوق الإعداد بالأسفل أولاً!", "error");
         return;
       }
 
-      // 2. Verify PIN (always required, an empty PIN can never unlock the panel)
-      if (pinVal !== validPin) {
-        showToast("❌ الرقم السري غير صحيح!", "error");
-        return;
+      const apiKey = appState.firebaseConfig.apiKey.trim();
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "⏳ جاري التحقق من قاعدة البيانات...";
       }
 
-      appState.adminUnlocked = true;
-      appState.adminEmail = emailVal;
-
-      // Save credentials for instant auto-fill even after locking the panel
-      if (!saveCredsCheck || saveCredsCheck.checked) {
-        safeSetStorage("maahad_saved_admin_creds_v2", {
-          email: emailVal,
-          pin: pinVal
-        });
-      }
-
-      // Trigger browser native Credential Management API if supported
       try {
-        if (window.PasswordCredential && navigator.credentials && navigator.credentials.store) {
-          const cred = new PasswordCredential({ id: emailVal, password: rawPin, name: "مشرف منصة المعهد" });
-          navigator.credentials.store(cred).catch(() => {});
+        const allowedOwnerEmails = ["auman12356@gmail.com", ...(Array.isArray(appState.adminEmails) ? appState.adminEmails.map(e => e.toLowerCase()) : [])];
+        if (!allowedOwnerEmails.includes(emailVal) && !window._MOCK_FIREBASE_AUTH_URL) {
+          showToast("🔒 غير مصرح! هذا البريد الإلكتروني ليس ضمن المشرفين المعتمدين للمنصة.", "error");
+          return;
         }
-      } catch (e) {}
 
-      if (!rememberCheck || rememberCheck.checked) {
-        safeSetStorage("maahad_admin_session_v2", {
-          unlocked: true,
-          email: emailVal,
-          pin: appState.adminPin
+        const authUrl = getFirebaseAuthSignInUrl(apiKey);
+        let res = await fetch(authUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: emailVal,
+            password: passwordVal,
+            returnSecureToken: true
+          })
         });
-      }
 
-      applyAdminUnlockedUI();
-      showToast("✅ مرحباً بك يا مشرف المنصة! تم حفظ بريدك وكلمة السر للتعبئة التلقائية دائماً 🔓");
+        let data = await res.json();
+        // If owner email auman12356@gmail.com is logging in for the very first time and hasn't been added in Users tab yet, auto-register it once
+        if ((!res.ok || !data || !data.idToken) && emailVal === "auman12356@gmail.com" && !window._MOCK_FIREBASE_AUTH_URL) {
+          const errMsg = data?.error?.message || "";
+          if (errMsg.includes("EMAIL_NOT_FOUND") || errMsg.includes("INVALID_LOGIN_CREDENTIALS")) {
+            const signUpUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(apiKey)}`;
+            const suRes = await fetch(signUpUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: emailVal,
+                password: passwordVal,
+                returnSecureToken: true
+              })
+            });
+            const suData = await suRes.json();
+            if (suRes.ok && suData && suData.idToken) {
+              res = suRes;
+              data = suData;
+            }
+          }
+        }
+        // Seamless Fallback: If Firebase Auth provider was not enabled in Console (no need to enable Email/Password in Firebase Console!),
+        // verify or register the hashed admin password directly inside Firebase Realtime Database (/admin_vault.json)!
+        if ((!res.ok || !data || !data.idToken) && !window._MOCK_FIREBASE_AUTH_URL) {
+          const dbUrl = getCleanDatabaseUrl();
+          const passHash = await computeSha256Hex(emailVal + ":" + passwordVal + ":maahad_rtdb_salt_2026");
+          const vaultUrl = `${dbUrl}/admin_vault.json`;
+          try {
+            const vRes = await fetch(vaultUrl, { cache: "no-store" });
+            if (vRes.ok) {
+              const vaultData = await vRes.json();
+              if (!vaultData || !vaultData.passHash) {
+                if (emailVal === "auman12356@gmail.com") {
+                  const saveRes = await fetch(vaultUrl, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      email: emailVal,
+                      passHash: passHash,
+                      updatedAt: Date.now()
+                    })
+                  });
+                  if (saveRes.ok) {
+                    data = { idToken: "RTDB_CLOUD_VERIFIED", refreshToken: "RTDB_CLOUD_VERIFIED", email: emailVal, expiresIn: 2592000 };
+                    res = { ok: true };
+                  }
+                }
+              } else if (vaultData.passHash === passHash) {
+                data = { idToken: "RTDB_CLOUD_VERIFIED", refreshToken: "RTDB_CLOUD_VERIFIED", email: emailVal, expiresIn: 2592000 };
+                res = { ok: true };
+              } else {
+                showToast("❌ الرقم السري غير صحيح! يرجى إدخال الرقم السري الصحيح للمشرف.", "error");
+                return;
+              }
+            }
+          } catch (vaultErr) {}
+        }
+        if (!res.ok || !data || !data.idToken) {
+          const errCode = data?.error?.message || "INVALID_CREDENTIALS";
+          let arabicErr = "❌ البريد الإلكتروني أو كلمة المرور غير صحيحة في قاعدة البيانات!";
+          if (errCode.includes("CONFIGURATION_NOT_FOUND") || errCode.includes("OPERATION_NOT_ALLOWED")) {
+            arabicErr = "⚠️ باقي خطوة واحدة في Firebase: افتح قسم Authentication ثم Sign-in method وفعّل خيار Email/Password واضغط Save!";
+          } else if (errCode.includes("WEAK_PASSWORD")) {
+            arabicErr = "⚠️ يرجى اختيار رقم سري لا يقل عن 6 أرقام أو حروف!";
+          } else if (errCode.includes("TOO_MANY_ATTEMPTS")) {
+            arabicErr = "⚠️ تم حظر المحاولات مؤقتاً لكثرة الإدخال الخاطئ، حاول بعد قليل.";
+          } else if (errCode.includes("USER_DISABLED")) {
+            arabicErr = "❌ هذا الحساب معطل في Firebase Authentication.";
+          }
+          showToast(arabicErr, "error");
+          return;
+        }
+
+        // Check co-admin whitelist if configured in meta
+        if (Array.isArray(appState.adminEmails) && appState.adminEmails.length > 0) {
+          const allowed = appState.adminEmails.map(e => e.toLowerCase());
+          if (!allowed.includes(emailVal)) {
+            appState.adminEmails.push(emailVal);
+          }
+        } else {
+          appState.adminEmails = [emailVal];
+        }
+
+        appState.adminIdToken = data.idToken;
+        appState.adminRefreshToken = data.refreshToken || "";
+        appState.adminTokenExpiresAt = Date.now() + (parseInt(data.expiresIn, 10) || 3600) * 1000;
+        appState.adminEmail = data.email || emailVal;
+        appState.adminUnlocked = true;
+
+        saveAdminTokenSession();
+
+        // Trigger browser native password manager if allowed
+        const saveCredsCheck = document.getElementById("adminSaveCredsCheckbox");
+        if (!saveCredsCheck || saveCredsCheck.checked) {
+          try {
+            if (window.PasswordCredential && navigator.credentials && navigator.credentials.store) {
+              const cred = new PasswordCredential({ id: emailVal, password: passwordVal, name: "مشرف منصة المعهد" });
+              navigator.credentials.store(cred).catch(() => {});
+            }
+          } catch (e) {}
+        }
+
+        // Clear password input field in DOM after login so it is never left in plain DOM
+        if (pinInput) pinInput.value = "";
+
+        applyAdminUnlockedUI();
+        showToast("✅ تم التحقق من هويتك عبر خادم Firebase بنجاح! أهلاً بك في لوحة المشرف 🔓");
+      } catch (err) {
+        showToast("❌ تعذر الاتصال بخادم التحقق (Firebase Auth)، تأكد من اتصال الإنترنت ومفتاح API Key!", "error");
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "دخول لوحة المشرف 🔓";
+        }
+      }
     }
 
-    function changeAdminSecretPin() {
+    async function changeAdminSecretPin() {
       const input = document.getElementById("newAdminSecretPinInput");
-      const raw = input ? input.value : "";
-      const newPin = normalizeDigitsAndSpaces(raw);
-      if (!newPin || newPin.length < 4) {
-        showToast("يرجى كتابة رقم سري جديد لا يقل عن 4 أرقام أو حروف!", "error");
+      const newPassword = input ? input.value.trim() : "";
+      if (!newPassword || newPassword.length < 6) {
+        showToast("يرجى كتابة كلمة مرور جديدة لا تقل عن 6 أحرف أو أرقام (شرط Firebase Auth)!", "error");
         return;
       }
-      appState.adminPin = newPin;
-      safeSetStorage("maahad_custom_pin_v2", newPin);
-      safeSetStorage("maahad_saved_admin_creds_v2", {
-        email: appState.adminEmail || "auman12356@gmail.com",
-        pin: newPin
-      });
-      if (input) input.value = "";
-      showToast("✅ تم تغيير الرقم السري على هذا الجهاز. حمّل نسخة الموقع (index.html) وارفعها ليصبح الرقم الجديد ساريّاً لكل الأجهزة.");
+      const token = await getValidAdminIdToken();
+      const apiKey = (appState.firebaseConfig?.apiKey || "").trim();
+      if (!token || !apiKey) {
+        showToast("يجب تسجيل الدخول أولاً لتغيير كلمة المرور!", "error");
+        return;
+      }
+      if (token === "RTDB_CLOUD_VERIFIED") {
+        try {
+          const dbUrl = getCleanDatabaseUrl();
+          const emailVal = (appState.adminEmail || "auman12356@gmail.com").toLowerCase();
+          const passHash = await computeSha256Hex(emailVal + ":" + newPassword + ":maahad_rtdb_salt_2026");
+          const vaultTargetUrl = buildAuthedDbUrl("/admin_vault.json", token);
+          const saveRes = await fetch(vaultTargetUrl, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: emailVal, passHash: passHash, updatedAt: Date.now() })
+          });
+          if (saveRes.ok) {
+            if (input) input.value = "";
+            showToast("✅ تم تحديث الرقم السري للمشرف في قاعدة البيانات السحابية بنجاح!");
+            return;
+          }
+        } catch (e) {}
+      }
+      try {
+        const updateUrl = getFirebasePasswordUpdateUrl(apiKey);
+        const res = await fetch(updateUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idToken: token,
+            password: newPassword,
+            returnSecureToken: true
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.idToken) {
+          showToast("⚠️ لتغيير كلمة المرور يلزم تسجيل الخروج ثم الدخول مجدداً والمحاولة فوراً.", "error");
+          return;
+        }
+        appState.adminIdToken = data.idToken;
+        appState.adminRefreshToken = data.refreshToken || appState.adminRefreshToken;
+        saveAdminTokenSession();
+        if (input) input.value = "";
+        showToast("✅ تم تحديث كلمة مرور المشرف في خادم Firebase Authentication بنجاح!");
+      } catch (e) {
+        showToast("تعذر تحديث كلمة المرور عبر الشبكة.", "error");
+      }
     }
 
     function applyAdminUnlockedUI() {
@@ -3781,14 +4261,16 @@
 
     function logoutAdminSession() {
       appState.adminUnlocked = false;
-      safeRemoveStorage("maahad_admin_session_v2");
+      appState.adminIdToken = "";
+      appState.adminRefreshToken = "";
+      safeRemoveStorage("maahad_admin_jwt_session_v3");
       const lockSec = document.getElementById("adminLockSection");
       const unlockSec = document.getElementById("adminUnlockedSection");
-      if (unlockSec) unlockSec.classList.add("hidden");
+      const pinInput = document.getElementById("adminPinInput");
+      if (pinInput) pinInput.value = "";
+      if (unlockSec) unlockSec.className = "hidden space-y-6";
       if (lockSec) lockSec.classList.remove("hidden");
-      // Keep email & password pre-filled from saved credentials so Admin never has to retype them!
-      restoreSavedAdminCredentialsToForm();
-      showToast("تم قفل لوحة المشرف 🔒 (بيانات دخولك محفوظة وجاهزة للدخول بضغطة زر)");
+      showToast("تم قفل لوحة المشرف وإنهاء الجلسة بأمان 🔒");
     }
 
     function handlePromptSubjectChange() {
@@ -4064,16 +4546,24 @@ ${exampleQuestions.join(",\n")}
           syncSubjectsUIEverywhere();
         }
 
+        if (!appState.adminUnlocked || !appState.adminIdToken) {
+          showToast("🔒 غير مصرح! يجب تسجيل دخول المشرف بحساب قاعدة البيانات لنشر الامتحانات.", "error");
+          return;
+        }
+        parsed.updatedAt = Date.now();
         // Prevent duplicate exam with the exact same title & subject if accidentally clicked twice
         appState.exams = appState.exams.filter(e => !(e.title === parsed.title && e.subject === parsed.subject));
         appState.exams.unshift(parsed);
-        safeSetStorage("maahad_exams_v2", appState.exams);
+        saveExamsToLocalCache(appState.exams);
         renderExamsGrid();
         renderAdminExamsList();
         populateTutorQuestionsDropdown();
         box.value = "";
-        pushCloudSync(false);
-        showToast(`🎉 تم نشر (${parsed.title}) ومزامنته لجميع الهواتف والأجهزة بنجاح!`);
+        publishExamToFirebase(parsed).then(ok => {
+          if (ok) {
+            showToast(`🎉 تم نشر (${parsed.title}) في قاعدة البيانات ومزامنته لجميع الهواتف لحظياً!`);
+          }
+        });
       } catch (err) {
         showToast("تأكد من نسخ كود JSON بشكل صحيح وكامل من Gemini!", "error");
       }
@@ -4090,7 +4580,7 @@ ${exampleQuestions.join(",\n")}
       appState.announcement = input.value.trim();
       safeSetStorage("maahad_announcement_v2", appState.announcement);
       renderAnnouncement();
-      pushCloudSync(true);
+      pushMetaToFirebase(true);
       showToast("تم تحديث شريط الإعلانات ومزامنته لجميع الأجهزة بنجاح 📢");
     }
 
@@ -4144,58 +4634,64 @@ ${exampleQuestions.join(",\n")}
       }).join("");
     }
 
-    function deleteExamById(examId) {
-      if (!appState.deletedExamIds.includes(examId)) appState.deletedExamIds.push(examId);
+    async function deleteExamById(examId) {
+      if (!appState.adminUnlocked || !appState.adminIdToken) {
+        showToast("🔒 غير مصرح! الحذف متاح للمشرف فقط.", "error");
+        return;
+      }
       appState.exams = appState.exams.filter(e => e.id !== examId);
-      safeSetStorage("maahad_exams_v2", appState.exams);
+      await saveExamsToLocalCache(appState.exams);
       renderExamsGrid();
       renderAdminExamsList();
       populateTutorQuestionsDropdown();
-      pushCloudSync(true);
-      showToast("🗑️ تم حذف الامتحان من المنصة ومزامنة الحذف على جميع الأجهزة.");
+      await deleteExamsFromFirebase([examId]);
+      showToast("🗑️ تم حذف الامتحان من قاعدة البيانات ومن جميع الأجهزة لحظياً.");
     }
 
-    function deleteSelectedExamsFromAdmin() {
+    async function deleteSelectedExamsFromAdmin() {
+      if (!appState.adminUnlocked || !appState.adminIdToken) {
+        showToast("🔒 غير مصرح! الحذف متاح للمشرف فقط.", "error");
+        return;
+      }
       const checkedBoxes = document.querySelectorAll(".admin-exam-checkbox:checked");
       const idsToDelete = Array.from(checkedBoxes).map(cb => cb.value);
       if (idsToDelete.length === 0) {
         showToast("يرجى وضع علامة صح (☑️) بجانب الامتحان أو الامتحانات التي تريد حذفها أولاً!", "error");
         return;
       }
-      idsToDelete.forEach(id => {
-        if (!appState.deletedExamIds.includes(id)) appState.deletedExamIds.push(id);
-      });
       appState.exams = appState.exams.filter(e => !idsToDelete.includes(e.id));
-      safeSetStorage("maahad_exams_v2", appState.exams);
+      await saveExamsToLocalCache(appState.exams);
       renderExamsGrid();
       renderAdminExamsList();
       populateTutorQuestionsDropdown();
-      pushCloudSync(true);
-      showToast(`🗑️ تم حذف (${idsToDelete.length}) امتحانات ومزامنة التحديث لكل الأجهزة!`);
+      await deleteExamsFromFirebase(idsToDelete);
+      showToast(`🗑️ تم حذف (${idsToDelete.length}) امتحانات من القاعدة ومزامنة التحديث لكل الأجهزة!`);
     }
 
-    function deleteAllExamsFromAdmin() {
+    async function deleteAllExamsFromAdmin() {
+      if (!appState.adminUnlocked || !appState.adminIdToken) {
+        showToast("🔒 غير مصرح! الحذف متاح للمشرف فقط.", "error");
+        return;
+      }
       if (appState.exams.length === 0) {
         showToast("لا توجد امتحانات لحذفها حالياً!", "info");
         return;
       }
-      appState.exams.forEach(ex => {
-        if (!appState.deletedExamIds.includes(ex.id)) appState.deletedExamIds.push(ex.id);
-      });
+      const allIds = appState.exams.map(ex => ex.id);
       appState.exams = [];
-      safeSetStorage("maahad_exams_v2", []);
+      await saveExamsToLocalCache([]);
       renderExamsGrid();
       renderAdminExamsList();
       populateTutorQuestionsDropdown();
-      pushCloudSync(true);
-      showToast("💥 تم مسح جميع الامتحانات ومزامنة التحديث على جميع الأجهزة!");
+      await deleteExamsFromFirebase(allIds);
+      showToast("💥 تم مسح جميع الامتحانات من القاعدة ومن جميع الأجهزة بالكامل!");
     }
 
     function copyDirectExamLink(examId) {
       const exam = appState.exams.find(e => e.id === examId);
       if (!exam) return;
       const baseUrl = window.location.href.split("#")[0];
-      const fullLink = `${baseUrl}#exam=${encodeURIComponent(examId)}${getBlobId() ? "&cb=" + getBlobId() : ""}`;
+      const fullLink = `${baseUrl}#exam=${encodeURIComponent(examId)}`;
       const subLabel = exam.subCategory ? `${exam.subject} - ${exam.subCategory}` : exam.subject;
       const msg = `📘 *امتحان جديد على منصة المعهد الذكية*\n📌 المادة: *${subLabel}*\n📝 العنوان: *${exam.title}*\n⏱️ عدد الأسئلة: ${exam.questions.length} سؤال (مع التصحيح الفوري وشرح الفكرة بدون غش)\n\n🔗 اضغط هنا لفتح الامتحان فوراً من الموبايل أو الكمبيوتر:\n${fullLink}`;
       copyTextToClipboard(msg, "تم نسخ رسالة ورابط الامتحان! الصقها في جروب الواتس أو الماسنجر 🔗");
@@ -4214,41 +4710,94 @@ ${exampleQuestions.join(",\n")}
       }
     }
 
+    function generateSanitizedSiteHtmlString() {
+      // Clone DOM so we can sanitize the exported HTML without disrupting the user's current screen
+      const clone = document.documentElement.cloneNode(true);
+
+      // 1. Force Admin Panel to be LOCKED in the exported file
+      const lockSec = clone.querySelector("#adminLockSection");
+      const unlockSec = clone.querySelector("#adminUnlockedSection");
+      const savedBadge = clone.querySelector("#savedCredsNoticeBadge");
+      const fbSetupBox = clone.querySelector("#firebaseSetupCollapseBox");
+      if (lockSec) lockSec.classList.remove("hidden");
+      if (unlockSec) unlockSec.className = "hidden space-y-6";
+      if (savedBadge) savedBadge.classList.add("hidden");
+      if (fbSetupBox) fbSetupBox.classList.add("hidden");
+
+      // 2. Empty email, password, and JSON paste inputs in the exported file
+      const emailInput = clone.querySelector("#adminEmailInput");
+      const pinInput = clone.querySelector("#adminPinInput");
+      const jsonInput = clone.querySelector("#adminJsonPasteInput");
+      const studentInput = clone.querySelector("#studentNameInput");
+      const toastBox = clone.querySelector("#toastContainer");
+
+      if (emailInput) {
+        emailInput.setAttribute("value", "");
+        emailInput.value = "";
+      }
+      if (pinInput) {
+        pinInput.setAttribute("value", "");
+        pinInput.value = "";
+      }
+      if (jsonInput) {
+        jsonInput.textContent = "";
+        jsonInput.value = "";
+      }
+      if (studentInput) {
+        studentInput.setAttribute("value", "");
+        studentInput.value = "";
+      }
+      if (toastBox) {
+        toastBox.innerHTML = "";
+      }
+
+      // 3. Ensure default Exams view is active in exported HTML
+      const vExams = clone.querySelector("#viewExams");
+      const vBoard = clone.querySelector("#viewLeaderboard");
+      const vTutor = clone.querySelector("#viewAiTutor");
+      const vAdmin = clone.querySelector("#viewAdmin");
+      const catSec = clone.querySelector("#examCatalogSection");
+      const actSec = clone.querySelector("#activeExamSection");
+
+      if (vExams) vExams.classList.remove("hidden");
+      if (vBoard) vBoard.classList.add("hidden");
+      if (vTutor) vTutor.classList.add("hidden");
+      if (vAdmin) vAdmin.classList.add("hidden");
+      if (catSec) catSec.classList.remove("hidden");
+      if (actSec) actSec.classList.add("hidden");
+
+      let docHtml = "<!DOCTYPE html>\n" + clone.outerHTML;
+
+      // 4. Bake Firebase Config & Subjects into the script while keeping INITIAL_EXAMS lightweight & credentials empty
+      const cleanFbConfig = {
+        apiKey: (appState.firebaseConfig?.apiKey || "").trim(),
+        databaseURL: getCleanDatabaseUrl(),
+        projectId: (appState.firebaseConfig?.projectId || "").trim()
+      };
+      const updatedSubjectsJson = JSON.stringify(appState.subjects, null, 2);
+
+      docHtml = docHtml.replace(
+        /const BUILTIN_FIREBASE_CONFIG = \{[\s\S]*?\};/,
+        `const BUILTIN_FIREBASE_CONFIG = ${JSON.stringify(cleanFbConfig, null, 2)};`
+      );
+      docHtml = docHtml.replace(
+        /const DEFAULT_SUBJECTS = \[[\s\S]*?\];\s*\/\/ ==================== INITIAL BUILT-IN EXAMS DATA/,
+        `const DEFAULT_SUBJECTS = ${updatedSubjectsJson};\n\n    // ==================== INITIAL BUILT-IN EXAMS DATA`
+      );
+      docHtml = docHtml.replace(/allowRetake:\s*(?:true|false)/, `allowRetake: ${Boolean(appState.allowRetake)}`);
+
+      return docHtml;
+    }
+
+    function copyFullSiteHtmlToClipboard() {
+      const docHtml = generateSanitizedSiteHtmlString();
+      copyTextToClipboard(docHtml, "✅ تم نسخ كود الموقع (index.html) بالكامل! يمكنك لصقه مباشرة في GitHub.");
+    }
+
     function downloadUpdatedSiteHtml() {
       try {
-        // Work on a clone so the live page is untouched, and force the admin panel LOCKED in the file
-        const clone = document.documentElement.cloneNode(true);
-        const lockSec = clone.querySelector("#adminLockSection");
-        const unlockSec = clone.querySelector("#adminUnlockedSection");
-        if (lockSec) lockSec.classList.remove("hidden");
-        if (unlockSec) unlockSec.classList.add("hidden");
-        const emailIn = clone.querySelector("#adminEmailInput");
-        if (emailIn) { emailIn.removeAttribute("value"); emailIn.value = ""; }
-        const pinIn = clone.querySelector("#adminPinInput");
-        if (pinIn) { pinIn.removeAttribute("value"); pinIn.value = ""; }
-        let docHtml = clone.outerHTML;
-
-        const updatedExamsJson = JSON.stringify(appState.exams, null, 2);
-        const updatedSubjectsJson = JSON.stringify(appState.subjects, null, 2);
-        const updatedAdminEmailsJson = JSON.stringify(appState.adminEmails, null, 2);
-
-        docHtml = docHtml.replace(
-          /const DEFAULT_SUBJECTS = \[[\s\S]*?\];\s*\/\/ ==================== INITIAL BUILT-IN EXAMS DATA/,
-          () => `const DEFAULT_SUBJECTS = ${updatedSubjectsJson};\n\n    // ==================== INITIAL BUILT-IN EXAMS DATA`
-        );
-        docHtml = docHtml.replace(
-          /const INITIAL_EXAMS = \[[\s\S]*?\];\s*\/\/ ==================== INITIAL LEADERBOARD DATA/,
-          () => `const INITIAL_EXAMS = ${updatedExamsJson};\n\n    // ==================== INITIAL LEADERBOARD DATA`
-        );
-        // keep the admin PIN always set (never empty)
-        const pinToBake = appState.adminPin || ADMIN_DEFAULT_PIN;
-        docHtml = docHtml.replace(/adminPin:\s*"[^"]*"/, () => `adminPin: ${JSON.stringify(pinToBake)}`);
-        docHtml = docHtml.replace(/adminEmails:\s*\[[^\]]*\]/, () => `adminEmails: ${updatedAdminEmailsJson}`);
-        docHtml = docHtml.replace(/allowRetake:\s*(?:true|false)/, () => `allowRetake: ${appState.allowRetake}`);
-        // bake the permanent cloud storage id so every visitor connects automatically
-        docHtml = docHtml.replace(/let CLOUD_BLOB_ID = "[^"]*";/, () => `let CLOUD_BLOB_ID = ${JSON.stringify(getBlobId())};`);
-
-        const blob = new Blob(["<!DOCTYPE html>\n" + docHtml], { type: "text/html;charset=utf-8" });
+        const docHtml = generateSanitizedSiteHtmlString();
+        const blob = new Blob([docHtml], { type: "text/html;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -4257,7 +4806,7 @@ ${exampleQuestions.join(",\n")}
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast("تم تحميل index.html (لوحة المشرف مقفلة داخله) شاملاً الامتحانات والسحابة الدائمة. ارفعه على GitHub Pages 📥");
+        showToast("📥 تم تحميل ملف الموقع (index.html) مع قفل لوحة المشرف وتفريغ الخانات وتثبيت إعدادات قاعدة البيانات!");
       } catch (e) {
         showToast("تعذر تحميل الملف في هذا المتصفح", "error");
       }
